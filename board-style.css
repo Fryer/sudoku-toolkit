@@ -1,0 +1,87 @@
+.board {
+    font-family: 'Mulish', sans-serif;
+    user-select: none;
+}
+.border-line, .cell-line, .box-line {
+    stroke: #202020;
+    fill: none;
+}
+.border-line {
+	stroke-width: 3.5;
+    stroke-linejoin: bevel;
+}
+.box-line {
+	stroke-width: 3.5;
+}
+.cell-line {
+	stroke: #606060;
+	stroke-width: 1.5;
+}
+.given, .digit {
+    font-size: 70px;
+    text-anchor: middle;
+    dominant-baseline: central;
+}
+.pencilmark {
+    font-size: 30px;
+    text-anchor: middle;
+    dominant-baseline: central;
+}
+.given {
+    fill: #303030;
+}
+.digit, .pencilmark {
+    fill: #408fff;
+}
+.selection {
+    stroke: #408fff7f;
+    fill: none;
+    stroke-width: 15;
+}
+.thermo-bulb {
+    fill: #cfcfcf;
+}
+.thermo-line {
+    stroke: #cfcfcf;
+    fill: none;
+	stroke-width: 30;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+.cage-line {
+    stroke: #202020;
+    fill: none;
+	stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-dasharray: 6 4;
+    stroke-dashoffset: 3;
+}
+.cage-sum {
+    fill: #303030;
+    font-size: 20px;
+    dominant-baseline: hanging;
+}
+.difference-value, .ratio-value, .quad-digits {
+    fill: #303030;
+    font-size: 20px;
+    text-anchor: middle;
+    dominant-baseline: central;
+}
+.difference-circle {
+    stroke: #202020;
+    fill: #ffffff;
+    stroke-width: 2.5;
+}
+.ratio-circle {
+    stroke: #202020;
+    fill: #202020;
+    stroke-width: 2.5;
+}
+.ratio-value {
+    fill: #dfdfdf;
+}
+.quad-circle {
+    stroke: #202020;
+    fill: #ffffff;
+    stroke-width: 1.5;
+}
