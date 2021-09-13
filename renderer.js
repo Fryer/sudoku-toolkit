@@ -126,6 +126,7 @@ function createBoard(puzzle) {
                 drawExtraCircle(board, extra);
                 break;
             case 'text':
+                drawExtraText(board, extra);
                 break;
         }
     }
@@ -490,7 +491,7 @@ function drawExtraPolygon(board, extra) {
     path += ' Z';
     
     let width = extra.width === undefined ? 1.5 : extra.width;
-    let color = extra.color === undefined ? '#000000' : extra.color;
+    let color = extra.color === undefined ? '#202020' : extra.color;
     let fill = extra.fill === undefined ? 'none' : extra.fill;
     
     let extraPolygon = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -516,7 +517,7 @@ function drawExtraCircle(board, extra) {
     let ry = extra.radius === undefined ? 40 : extra.radius[1];
     
     let width = extra.width === undefined ? 1.5 : extra.width;
-    let color = extra.color === undefined ? '#000000' : extra.color;
+    let color = extra.color === undefined ? '#202020' : extra.color;
     let fill = extra.fill === undefined ? 'none' : extra.fill;
     
     let extraCircle = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
@@ -537,6 +538,57 @@ function drawExtraCircle(board, extra) {
     }
     else {
         board.insertBefore(extraCircle, board[before]);
+    }
+}
+
+
+function drawExtraText(board, extra) {
+    let x = extra.position[0] * 100;
+    let y = extra.position[1] * 100;
+    let halign = 'middle';
+    let valign = 'central';
+    let size = extra.size === undefined ? 20 : extra.size;
+    let color = extra.color === undefined ? '#303030' : extra.color;
+    
+    switch (extra.halign) {
+        case 'left':
+            halign = '';
+            break;
+        case 'right':
+            halign = 'end';
+            break;
+    }
+    switch (extra.valign) {
+        case 'bottom':
+            valign = '';
+            break;
+        case 'top':
+            valign = 'hanging';
+            break;
+    }
+    
+    let extraText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    extraText.setAttribute('x', x);
+    extraText.setAttribute('y', y);
+    extraText.setAttribute('font-size', `${size}px`);
+    if (halign) {
+        extraText.setAttribute('text-anchor', halign);
+    }
+    if (valign) {
+        extraText.setAttribute('dominant-baseline', valign);
+    }
+    if (extra.angle !== undefined && extra.angle != 0) {
+        extraText.setAttribute('transform', `rotate(${extra.angle}, ${x}, ${y})`);
+    }
+    extraText.setAttribute('fill', color);
+    extraText.textContent = extra.text;
+    
+    let before = extra.before === undefined ? 'givens' : extra.before;
+    if (before == '') {
+        board.appendChild(extraText);
+    }
+    else {
+        board.insertBefore(extraText, board[before]);
     }
 }
 

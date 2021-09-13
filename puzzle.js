@@ -183,9 +183,19 @@ function loadFromFPuzzles(fpuzzles) {
         puzzle.extras.push({
             type: 'polygon',
             path: [[column - xx - yx, row - xy - yy], [column + xx - yx, row + xy - yy], [column + xx + yx, row + xy + yy], [column - xx + yx, row - xy + yy]],
-            color: rectangle.outlineC,
+            color: rectangle.outlineC == '#000000' ? undefined : rectangle.outlineC,
             fill: rectangle.baseC
         });
+        if (rectangle.value !== undefined) {
+            puzzle.extras.push({
+                type: 'text',
+                text: rectangle.value,
+                position: [column - 0.5, row - 0.5],
+                size: Math.min(40, 100 * rectangle.width / rectangle.value.length),
+                angle: rectangle.angle,
+                color: rectangle.fontC == '#000000' ? undefined : rectangle.fontC
+            });
+        }
     }
     
     data.circle = data.circle !== undefined ? data.circle : [];
@@ -204,8 +214,39 @@ function loadFromFPuzzles(fpuzzles) {
             center: [column - 0.5, row - 0.5],
             radius: [circle.width * 50, circle.height * 50],
             angle: circle.angle,
-            color: circle.outlineC,
+            color: circle.outlineC == '#000000' ? undefined : circle.outlineC,
             fill: circle.baseC
+        });
+        if (circle.value !== undefined) {
+            puzzle.extras.push({
+                type: 'text',
+                text: circle.value,
+                position: [column - 0.5, row - 0.5],
+                size: Math.min(40, 100 * circle.width / circle.value.length),
+                angle: circle.angle,
+                color: circle.fontC == '#000000' ? undefined : circle.fontC
+            });
+        }
+    }
+    
+    data.text = data.text !== undefined ? data.text : [];
+    for (let text of data.text) {
+        let column = 0;
+        let row = 0;
+        for (let rxcx of text.cells) {
+            let cell = rxcxToCell(rxcx);
+            column += cell[0];
+            row += cell[1];
+        }
+        column /= text.cells.length;
+        row /= text.cells.length;
+        puzzle.extras.push({
+            type: 'text',
+            text: text.value,
+            position: [column - 0.5, row - 0.5],
+            size: text.size * 80,
+            angle: text.angle,
+            color: text.fontC == '#000000' ? undefined : text.fontC
         });
     }
     
@@ -263,21 +304,22 @@ puzzle.kropki = [];
 // Polygon options:
 //   path: [[column, row], ...],
 //   width (default: 1.5),
-//   color (default: '#000000'),
+//   color (default: '#202020'),
 //   fill (default: 'none')
 // Cirlce options:
 //   center: [column, row],
 //   radius: [x, y] (default: [40, 40]),
 //   width (default: 1.5),
 //   angle (default: 0),
-//   color (default: '#000000'),
+//   color (default: '#202020'),
 //   fill (default: 'none')
 // Text options:
 //   text,
 //   position: [column, row],
+//   size (default: 20),
 //   halign: 'left' | 'center' | 'right' (default: 'center'),
 //   valign: 'top' | 'middle' | 'bottom' (default: 'middle'),
-//   size (default: 20),
+//   angle (default: 0),
 //   color (default: '#303030')
 puzzle.extras = [];
 
