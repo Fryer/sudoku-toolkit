@@ -147,14 +147,118 @@ function redrawDigits() {
 }
 
 
-function drawSelection(cells) {
-    let path = '';
-    for (let cell of cells) {
-        let x = cell[0] * 100 - 50;
-        let y = cell[1] * 100 - 50;
-        path += `M${x - 42.5} ${y - 42.5} L${x + 42.5} ${y - 42.5} L${x + 42.5} ${y + 42.5} L${x - 42.5} ${y + 42.5} Z `;
+function createOutline(board, cells, inset) {
+    let gridSize = board.puzzle.size + 3;
+    function edgeIndex(column, row, direction) {
+        return row * gridSize + column + direction * gridSize ** 2;
     }
     
+    let edges = {};
+    for (let cell of cells) {
+        // Left edge.
+        let left = edgeIndex(cell[0] - 1, cell[1], 2);
+        if (edges[left] === undefined) {
+            edges[edgeIndex(...cell, 0)] = {
+                back: [cell[0] * 100 - 100 + inset, cell[1] * 100 - inset],
+                farBack: [cell[0] * 100 - 100 + inset, cell[1] * 100 + inset],
+                forwardJoin: edgeIndex(cell[0], cell[1] - 1, 0),
+                convexJoin: edgeIndex(cell[0], cell[1], 1),
+                concaveJoin: edgeIndex(cell[0] - 1, cell[1] - 1, 3),
+                visited: false
+            };
+        }
+        else {
+            delete edges[left];
+        }
+        // Top Edge.
+        let up = edgeIndex(cell[0], cell[1] - 1, 3);
+        if (edges[up] === undefined) {
+            edges[edgeIndex(...cell, 1)] = {
+                back: [cell[0] * 100 - 100 + inset, cell[1] * 100 - 100 + inset],
+                farBack: [cell[0] * 100 - 100 - inset, cell[1] * 100 - 100 + inset],
+                forwardJoin: edgeIndex(cell[0] + 1, cell[1], 1),
+                convexJoin: edgeIndex(cell[0], cell[1], 2),
+                concaveJoin: edgeIndex(cell[0] + 1, cell[1] - 1, 0),
+                visited: false
+            };
+        }
+        else {
+            delete edges[up];
+        }
+        // Right edge.
+        let right = edgeIndex(cell[0] + 1, cell[1], 0);
+        if (edges[right] === undefined) {
+            edges[edgeIndex(...cell, 2)] = {
+                back: [cell[0] * 100 - inset, cell[1] * 100 - 100 + inset],
+                farBack: [cell[0] * 100 - inset, cell[1] * 100 - 100 - inset],
+                forwardJoin: edgeIndex(cell[0], cell[1] + 1, 2),
+                convexJoin: edgeIndex(cell[0], cell[1], 3),
+                concaveJoin: edgeIndex(cell[0] + 1, cell[1] + 1, 1),
+                visited: false
+            };
+        }
+        else {
+            delete edges[right];
+        }
+        // Bottom edge.
+        let down = edgeIndex(cell[0], cell[1] + 1, 1);
+        if (edges[down] === undefined) {
+            edges[edgeIndex(...cell, 3)] = 3;
+            edges[edgeIndex(...cell, 3)] = {
+                back: [cell[0] * 100 - inset, cell[1] * 100 - inset],
+                farBack: [cell[0] * 100 + inset, cell[1] * 100 - inset],
+                forwardJoin: edgeIndex(cell[0] - 1, cell[1], 3),
+                convexJoin: edgeIndex(cell[0], cell[1], 0),
+                concaveJoin: edgeIndex(cell[0] - 1, cell[1] + 1, 2),
+                visited: false
+            };
+        }
+        else {
+            delete edges[down];
+        }
+    }
+    
+    let paths = [];
+    for (let [first, edge] of Object.entries(edges)) {
+        if (edge.visited) {
+            continue;
+        }
+        let path = '';
+        let current = first;
+        let target = 'back';
+        do {
+            let edge = edges[current];
+            edge.visited = true;
+            if (current != first) {
+                path += ` L${edge[target][0]} ${edge[target][1]}`;
+            }
+            let forwardEdge = edges[edge.forwardJoin];
+            if (forwardEdge !== undefined) {
+                current = edge.forwardJoin;
+                target = 'back';
+                continue;
+            }
+            let convexEdge = edges[edge.convexJoin];
+            if (convexEdge !== undefined) {
+                current = edge.convexJoin;
+                target = 'back';
+                continue;
+            }
+            let concaveEdge = edges[edge.concaveJoin];
+            if (concaveEdge !== undefined) {
+                current = edge.concaveJoin;
+                target = 'farBack';
+            }
+        } while (current != first);
+        paths.push(`M${edge[target][0]} ${edge[target][1]}${path} Z`);
+    }
+    
+    return paths.join(' ');
+}
+
+
+function drawSelection(cells) {
+    let path = createOutline(this, cells, 7.5);
     let selection = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     selection.setAttribute('class', 'selection');
     selection.setAttribute('d', path);
@@ -175,184 +279,7 @@ function drawGiven(board, digit, column, row) {
 
 
 function drawCage(board, sum, cells, color, sumColor) {
-    // Create cage cell segments.
-    let lSegments = [];
-    let tSegments = [];
-    let rSegments = [];
-    let bSegments = [];
-    for (let cell of cells) {
-        lSegments.push(cell);
-        tSegments.push(cell);
-        rSegments.push(cell);
-        bSegments.push(cell);
-    }
-    
-    // Remove segments between cells.
-    let lKeepSegments = [];
-    for (let lSegment of lSegments) {
-        let keep = true;
-        for (let rSegment of rSegments) {
-            if (lSegment[0] == rSegment[0] + 1 && lSegment[1] == rSegment[1]) {
-                keep = false;
-                break;
-            }
-        }
-        if (keep) {
-            lKeepSegments.push(lSegment);
-        }
-    }
-    let tKeepSegments = [];
-    for (let tSegment of tSegments) {
-        let keep = true;
-        for (let bSegment of bSegments) {
-            if (tSegment[1] == bSegment[1] + 1 && tSegment[0] == bSegment[0]) {
-                keep = false;
-                break;
-            }
-        }
-        if (keep) {
-            tKeepSegments.push(tSegment);
-        }
-    }
-    let rKeepSegments = [];
-    for (let rSegment of rSegments) {
-        let keep = true;
-        for (let lSegment of lSegments) {
-            if (rSegment[0] == lSegment[0] - 1 && rSegment[1] == lSegment[1]) {
-                keep = false;
-                break;
-            }
-        }
-        if (keep) {
-            rKeepSegments.push(rSegment);
-        }
-    }
-    let bKeepSegments = [];
-    for (let bSegment of bSegments) {
-        let keep = true;
-        for (let tSegment of tSegments) {
-            if (bSegment[1] == tSegment[1] - 1 && bSegment[0] == tSegment[0]) {
-                keep = false;
-                break;
-            }
-        }
-        if (keep) {
-            bKeepSegments.push(bSegment);
-        }
-    }
-    lSegments = lKeepSegments;
-    tSegments = tKeepSegments;
-    rSegments = rKeepSegments;
-    bSegments = bKeepSegments;
-    
-    // Connect segments.
-    let segments = [];
-    for (let lSegment of lSegments) {
-        let joinUp = 0;
-        let joinDown = 0;
-        for (let lJoinSegment of lSegments) {
-            if (lSegment[0] == lJoinSegment[0] && lSegment[1] == lJoinSegment[1] + 1) {
-                joinUp = 10;
-            }
-            if (lSegment[0] == lJoinSegment[0] && lSegment[1] == lJoinSegment[1] - 1) {
-                joinDown = 10;
-            }
-        }
-        for (let bJoinSegment of bSegments) {
-            if (lSegment[0] == bJoinSegment[0] + 1 && lSegment[1] == bJoinSegment[1] + 1) {
-                joinUp = 20;
-            }
-        }
-        for (let tJoinSegment of tSegments) {
-            if (lSegment[0] == tJoinSegment[0] + 1 && lSegment[1] == tJoinSegment[1] - 1) {
-                joinDown = 20;
-            }
-        }
-        let x = lSegment[0] * 100 - 90;
-        let y = lSegment[1] * 100 - 90;
-        segments.push([x, y - joinUp, x, y + 80 + joinDown]);
-    }
-    for (let tSegment of tSegments) {
-        let joinLeft = 0;
-        let joinRight = 0;
-        for (let tJoinSegment of tSegments) {
-            if (tSegment[1] == tJoinSegment[1] && tSegment[0] == tJoinSegment[0] + 1) {
-                joinLeft = 10;
-            }
-            if (tSegment[1] == tJoinSegment[1] && tSegment[0] == tJoinSegment[0] - 1) {
-                joinRight = 10;
-            }
-        }
-        for (let lJoinSegment of lSegments) {
-            if (tSegment[0] == lJoinSegment[0] - 1 && tSegment[1] == lJoinSegment[1] + 1) {
-                joinRight = 20;
-            }
-        }
-        for (let rJoinSegment of rSegments) {
-            if (tSegment[0] == rJoinSegment[0] + 1 && tSegment[1] == rJoinSegment[1] + 1) {
-                joinLeft = 20;
-            }
-        }
-        let x = tSegment[0] * 100 - 90;
-        let y = tSegment[1] * 100 - 90;
-        segments.push([x - joinLeft, y, x + 80 + joinRight, y]);
-    }
-    for (let rSegment of rSegments) {
-        let joinUp = 0;
-        let joinDown = 0;
-        for (let rJoinSegment of rSegments) {
-            if (rSegment[0] == rJoinSegment[0] && rSegment[1] == rJoinSegment[1] + 1) {
-                joinUp = 10;
-            }
-            if (rSegment[0] == rJoinSegment[0] && rSegment[1] == rJoinSegment[1] - 1) {
-                joinDown = 10;
-            }
-        }
-        for (let bJoinSegment of bSegments) {
-            if (rSegment[0] == bJoinSegment[0] - 1 && rSegment[1] == bJoinSegment[1] + 1) {
-                joinUp = 20;
-            }
-        }
-        for (let tJoinSegment of tSegments) {
-            if (rSegment[0] == tJoinSegment[0] - 1 && rSegment[1] == tJoinSegment[1] - 1) {
-                joinDown = 20;
-            }
-        }
-        let x = rSegment[0] * 100 - 10;
-        let y = rSegment[1] * 100 - 90;
-        segments.push([x, y - joinUp, x, y + 80 + joinDown]);
-    }
-    for (let bSegment of bSegments) {
-        let joinLeft = 0;
-        let joinRight = 0;
-        for (let bJoinSegment of bSegments) {
-            if (bSegment[1] == bJoinSegment[1] && bSegment[0] == bJoinSegment[0] + 1) {
-                joinLeft = 10;
-            }
-            if (bSegment[1] == bJoinSegment[1] && bSegment[0] == bJoinSegment[0] - 1) {
-                joinRight = 10;
-            }
-        }
-        for (let lJoinSegment of lSegments) {
-            if (bSegment[0] == lJoinSegment[0] - 1 && bSegment[1] == lJoinSegment[1] - 1) {
-                joinRight = 20;
-            }
-        }
-        for (let rJoinSegment of rSegments) {
-            if (bSegment[0] == rJoinSegment[0] + 1 && bSegment[1] == rJoinSegment[1] - 1) {
-                joinLeft = 20;
-            }
-        }
-        let x = bSegment[0] * 100 - 90;
-        let y = bSegment[1] * 100 - 10;
-        segments.push([x - joinLeft, y, x + 80 + joinRight, y]);
-    }
-    
-    let path = '';
-    for (let segment of segments) {
-        path += ` M${segment[0]} ${segment[1]} L${segment[2]} ${segment[3]}`;
-    }
-    
+    let path = createOutline(board, cells, 10);
     let cageLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     cageLine.setAttribute('class', 'cage-line');
     cageLine.setAttribute('d', path);
