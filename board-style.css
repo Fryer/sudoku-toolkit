@@ -48,6 +48,20 @@
     stroke-linejoin: round;
     stroke-linecap: round;
 }
+.arrow-bulb, .arrow-line, .arrow-cap {
+    stroke: #505050;
+    stroke-width: 3.5;
+}
+.arrow-bulb {
+    fill: #ffffffcf;
+}
+.arrow-line {
+    fill: none;
+    stroke-linejoin: round;
+}
+.arrow-cap {
+    fill: none;
+}
 .cage-line {
     stroke: #202020;
     fill: none;

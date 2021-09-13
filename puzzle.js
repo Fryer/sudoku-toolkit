@@ -8,12 +8,13 @@ function loadFromFPuzzles(fpuzzles) {
     
     let puzzle = {
         size: data.size,
-        givens: [],
-        cages: [],
         thermos: [],
-        kropki: [],
+        arrows: [],
+        cages: [],
         quads: [],
+        kropki: [],
         extras: [],
+        givens: [],
         digits: [],
         centerMarks: [],
         cornerMarks: []
@@ -80,6 +81,36 @@ function loadFromFPuzzles(fpuzzles) {
         puzzle.thermos.push(lines);
     }
     
+    data.arrow = data.arrow !== undefined ? data.arrow : [];
+    for (let arrow of data.arrow) {
+        let lines = [];
+        for (let part of arrow.lines) {
+            let line = [];
+            for (let rxcx of part) {
+                line.push(rxcxToCell(rxcx));
+            }
+            lines.push(line);
+        }
+        puzzle.arrows.push(lines);
+    }
+    
+    data.quadruple = data.quadruple !== undefined ? data.quadruple : [];
+    for (let quad of data.quadruple) {
+        let cells = [
+            rxcxToCell(quad.cells[0]),
+            rxcxToCell(quad.cells[1]),
+            rxcxToCell(quad.cells[2]),
+            rxcxToCell(quad.cells[3])
+        ];
+        let column = Math.min(cells[0][0], cells[1][0], cells[2][0], cells[3][0]);
+        let row = Math.min(cells[0][1], cells[1][1], cells[2][1], cells[3][1]);
+        let digits = quad.values.slice(0, 2).join('');
+        if (quad.values.length > 2) {
+            digits = quad.values.slice(0, 2).join(' ') + '\n' + quad.values.slice(2, 4).join(' ');
+        }
+        puzzle.quads.push([digits, column, row]);
+    }
+    
     data.difference = data.difference !== undefined ? data.difference : [];
     for (let difference of data.difference) {
         let cells = [
@@ -104,23 +135,6 @@ function loadFromFPuzzles(fpuzzles) {
         let row = Math.min(cells[0][1], cells[1][1]);
         let value = ratio.value !== undefined ? ratio.value : '';
         puzzle.kropki.push([value, 'ratio', column, row, horizontal]);
-    }
-    
-    data.quadruple = data.quadruple !== undefined ? data.quadruple : [];
-    for (let quad of data.quadruple) {
-        let cells = [
-            rxcxToCell(quad.cells[0]),
-            rxcxToCell(quad.cells[1]),
-            rxcxToCell(quad.cells[2]),
-            rxcxToCell(quad.cells[3])
-        ];
-        let column = Math.min(cells[0][0], cells[1][0], cells[2][0], cells[3][0]);
-        let row = Math.min(cells[0][1], cells[1][1], cells[2][1], cells[3][1]);
-        let digits = quad.values.slice(0, 2).join('');
-        if (quad.values.length > 2) {
-            digits = quad.values.slice(0, 2).join(' ') + '\n' + quad.values.slice(2, 4).join(' ');
-        }
-        puzzle.quads.push([digits, column, row]);
     }
     
     data.line = data.line !== undefined ? data.line : [];
@@ -212,20 +226,20 @@ function cellPosition(index) {
 
 let puzzle = {};
 
-// Format: [digit, column, row]
-puzzle.givens = [];
+// Format: [line: [cell: [column, row], ...], ...]
+puzzle.thermos = [];
+
+// Format: [line: [cell: [column, row], ...], ...]
+puzzle.arrows = [];
 
 // Format: [sum, cells: [[column, row], ...], color (default: #202020), sumColor (default: #303030)]
 puzzle.cages = [];
 
-// Format: [line: [cell: [column, row], ...], ...]
-puzzle.thermos = [];
+// Format: [digits, column, row]
+puzzle.quads = [];
 
 // Format: [value, type: 'difference' | 'ratio', column, row, horizontal?]
 puzzle.kropki = [];
-
-// Format: [digits, column, row]
-puzzle.quads = [];
 
 // Format:
 //   {
@@ -259,6 +273,9 @@ puzzle.quads = [];
 //   size (default: 20),
 //   color (default: '#303030')
 puzzle.extras = [];
+
+// Format: [digit, column, row]
+puzzle.givens = [];
 
 // Format: [digit, column, row]
 puzzle.digits = [];

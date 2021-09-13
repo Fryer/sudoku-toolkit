@@ -23,8 +23,26 @@ function createBoard(puzzle) {
     let stylePlaceholder = document.createElement('style');
     board.appendChild(stylePlaceholder);
     
+    let defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    board.appendChild(defs);
+    
+    let arrowMarker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+    arrowMarker.setAttribute('id', 'arrow-cap');
+    arrowMarker.setAttribute('markerWidth', 100);
+    arrowMarker.setAttribute('markerHeight', 100);
+    arrowMarker.setAttribute('markerUnits', 'userSpaceOnUse');
+    arrowMarker.setAttribute('viewBox', '-50 -50 100 100');
+    arrowMarker.setAttribute('orient', 'auto-start-reverse');
+    let arrowMarkerPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    arrowMarkerPath.setAttribute('class', 'arrow-cap');
+    arrowMarkerPath.setAttribute('d', 'M-20 -20 L0 0 L-20 20');
+    arrowMarker.appendChild(arrowMarkerPath);
+    defs.appendChild(arrowMarker);
+    
     board.thermos = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     board.appendChild(board.thermos);
+    board.arrows = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    board.appendChild(board.arrows);
     board.cages = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     board.appendChild(board.cages);
     board.grid = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -70,17 +88,20 @@ function createBoard(puzzle) {
     for (let given of puzzle.givens) {
         drawGiven(board, ...given);
     }
-    for (let cage of puzzle.cages) {
-        drawCage(board, ...cage);
-    }
     for (let thermo of puzzle.thermos) {
         drawThermo(board, thermo);
     }
-    for (let kropki of puzzle.kropki) {
-        drawKropki(board, ...kropki);
+    for (let arrow of puzzle.arrows) {
+        drawArrow(board, arrow);
+    }
+    for (let cage of puzzle.cages) {
+        drawCage(board, ...cage);
     }
     for (let quad of puzzle.quads) {
         drawQuad(board, ...quad);
+    }
+    for (let kropki of puzzle.kropki) {
+        drawKropki(board, ...kropki);
     }
     
     for (let extra of puzzle.extras) {
@@ -278,6 +299,66 @@ function drawGiven(board, digit, column, row) {
 }
 
 
+function drawThermo(board, lines) {
+    for (let cells of lines) {
+        let x = cells[0][0] * 100 - 50;
+        let y = cells[0][1] * 100 - 50;
+        let path = `M${x} ${y}`;
+        for (let i = 1; i < cells.length; i++) {
+            let x = cells[i][0] * 100 - 50;
+            let y = cells[i][1] * 100 - 50;
+            path += ` L${x} ${y}`;
+        }
+        
+        let thermoLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        thermoLine.setAttribute('class', 'thermo-line');
+        thermoLine.setAttribute('d', path);
+        board.thermos.appendChild(thermoLine);
+    }
+    
+    let thermoBulb = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    thermoBulb.setAttribute('class', 'thermo-bulb');
+    thermoBulb.setAttribute('cx', lines[0][0][0] * 100 - 50);
+    thermoBulb.setAttribute('cy', lines[0][0][1] * 100 - 50);
+    thermoBulb.setAttribute('r', 40);
+    board.thermos.appendChild(thermoBulb);
+}
+
+
+function drawArrow(board, lines) {
+    for (let cells of lines) {
+        let x = cells[0][0] * 100 - 50;
+        let y = cells[0][1] * 100 - 50;
+        let nextX = cells[1][0] * 100 - 50;
+        let nextY = cells[1][1] * 100 - 50;
+        let dx = nextX - x;
+        let dy = nextY - y;
+        let d = Math.sqrt(dx * dx + dy * dy);
+        x += 35 * dx / d;
+        y += 35 * dy / d;
+        let path = `M${x} ${y}`;
+        for (let i = 1; i < cells.length; i++) {
+            let x = cells[i][0] * 100 - 50;
+            let y = cells[i][1] * 100 - 50;
+            path += ` L${x} ${y}`;
+        }
+        
+        let arrowLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        arrowLine.setAttribute('class', 'arrow-line');
+        arrowLine.setAttribute('d', path);
+        arrowLine.setAttribute('marker-end', 'url(#arrow-cap)');
+        board.arrows.appendChild(arrowLine);
+    }
+    
+    let arrowBulb = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    arrowBulb.setAttribute('class', 'arrow-bulb');
+    arrowBulb.setAttribute('cx', lines[0][0][0] * 100 - 50);
+    arrowBulb.setAttribute('cy', lines[0][0][1] * 100 - 50);
+    arrowBulb.setAttribute('r', 35);
+    board.arrows.appendChild(arrowBulb);
+}
+
+
 function drawCage(board, sum, cells, color, sumColor) {
     let path = createOutline(board, cells, 10);
     let cageLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -314,54 +395,6 @@ function drawCage(board, sum, cells, color, sumColor) {
 }
 
 
-function drawThermo(board, lines) {
-    for (let cells of lines) {
-        let x = cells[0][0] * 100 - 50;
-        let y = cells[0][1] * 100 - 50;
-        let path = `M${x} ${y}`;
-        for (let i = 1; i < cells.length; i++) {
-            let x = cells[i][0] * 100 - 50;
-            let y = cells[i][1] * 100 - 50;
-            path += ` L${x} ${y}`;
-        }
-        
-        let thermoLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        thermoLine.setAttribute('class', 'thermo-line');
-        thermoLine.setAttribute('d', path);
-        board.thermos.appendChild(thermoLine);
-    }
-    
-    let thermoBulb = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    thermoBulb.setAttribute('class', 'thermo-bulb');
-    thermoBulb.setAttribute('cx', lines[0][0][0] * 100 - 50);
-    thermoBulb.setAttribute('cy', lines[0][0][1] * 100 - 50);
-    thermoBulb.setAttribute('r', 40);
-    board.thermos.appendChild(thermoBulb);
-}
-
-
-function drawKropki(board, value, type, column, row, horizontal) {
-    let x = column * 100 - (horizontal ? 0 : 50);
-    let y = row * 100 - (horizontal ? 50 : 0);
-    
-    let kropkiCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    kropkiCircle.setAttribute('class', `${type}-circle`);
-    kropkiCircle.setAttribute('cx', x);
-    kropkiCircle.setAttribute('cy', y);
-    kropkiCircle.setAttribute('r', 15);
-    board.kropki.appendChild(kropkiCircle);
-    
-    if (value !== '') {
-        let kropkiValue = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        kropkiValue.setAttribute('class', `${type}-value`);
-        kropkiValue.setAttribute('x', x);
-        kropkiValue.setAttribute('y', y);
-        kropkiValue.textContent = value;
-        board.kropki.appendChild(kropkiValue);
-    }
-}
-
-
 function drawQuad(board, digits, column, row) {
     let x = column * 100;
     let y = row * 100;
@@ -383,6 +416,28 @@ function drawQuad(board, digits, column, row) {
         quadDigits.textContent = line;
         board.quads.appendChild(quadDigits);
         dy += 20;
+    }
+}
+
+
+function drawKropki(board, value, type, column, row, horizontal) {
+    let x = column * 100 - (horizontal ? 0 : 50);
+    let y = row * 100 - (horizontal ? 50 : 0);
+    
+    let kropkiCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    kropkiCircle.setAttribute('class', `${type}-circle`);
+    kropkiCircle.setAttribute('cx', x);
+    kropkiCircle.setAttribute('cy', y);
+    kropkiCircle.setAttribute('r', 15);
+    board.kropki.appendChild(kropkiCircle);
+    
+    if (value !== '') {
+        let kropkiValue = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        kropkiValue.setAttribute('class', `${type}-value`);
+        kropkiValue.setAttribute('x', x);
+        kropkiValue.setAttribute('y', y);
+        kropkiValue.textContent = value;
+        board.kropki.appendChild(kropkiValue);
     }
 }
 
