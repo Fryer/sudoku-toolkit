@@ -57,6 +57,19 @@ function createBoard(puzzle) {
     board.appendChild(board.digits);
     
     let gridSize = puzzle.size * 100;
+    if (puzzle.diagonals[0]) {
+        let diagonalLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        diagonalLine.setAttribute('class', 'diagonal-line');
+        diagonalLine.setAttribute('d', `M0 ${gridSize} L${gridSize} 0`);
+        board.grid.appendChild(diagonalLine);
+    }
+    if (puzzle.diagonals[1]) {
+        let diagonalLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        diagonalLine.setAttribute('class', 'diagonal-line');
+        diagonalLine.setAttribute('d', `M0 0 L${gridSize} ${gridSize}`);
+        board.grid.appendChild(diagonalLine);
+    }
+    
     let cellLinesPath = '';
     for (let column = 1; column <= puzzle.size; column++) {
         let x = column * 100;
@@ -85,9 +98,6 @@ function createBoard(puzzle) {
     borderLines.setAttribute('d', `M0 0 L${gridSize} 0 L${gridSize} ${gridSize} L0 ${gridSize} Z`);
     board.grid.appendChild(borderLines);
     
-    for (let given of puzzle.givens) {
-        drawGiven(board, ...given);
-    }
     for (let thermo of puzzle.thermos) {
         drawThermo(board, thermo);
     }
@@ -120,7 +130,10 @@ function createBoard(puzzle) {
         }
     }
     
-    board.redrawDigits;
+    for (let given of puzzle.givens) {
+        drawGiven(board, ...given);
+    }
+    board.redrawDigits();
     
     document.body.removeChild(board);
     
@@ -286,16 +299,6 @@ function drawSelection(cells) {
     this.insertBefore(selection, this.grid);
     
     return selection;
-}
-
-
-function drawGiven(board, digit, column, row) {
-    let given = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    given.setAttribute('class', 'given');
-    given.setAttribute('x', column * 100 - 50);
-    given.setAttribute('y', row * 100 - 50);
-    given.textContent = digit;
-    board.givens.appendChild(given);
 }
 
 
@@ -535,6 +538,16 @@ function drawExtraCircle(board, extra) {
     else {
         board.insertBefore(extraCircle, board[before]);
     }
+}
+
+
+function drawGiven(board, digit, column, row) {
+    let given = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    given.setAttribute('class', 'given');
+    given.setAttribute('x', column * 100 - 50);
+    given.setAttribute('y', row * 100 - 50);
+    given.textContent = digit;
+    board.givens.appendChild(given);
 }
 
 

@@ -11,6 +11,7 @@ function loadFromFPuzzles(fpuzzles) {
         thermos: [],
         arrows: [],
         cages: [],
+        diagonals: [false, false],
         quads: [],
         kropki: [],
         extras: [],
@@ -56,18 +57,6 @@ function loadFromFPuzzles(fpuzzles) {
         puzzle.cages.push([sum, cells]);
     }
     
-    data.cage = data.cage !== undefined ? data.cage : [];
-    for (let cage of data.cage) {
-        let cells = [];
-        for (let rxcx of cage.cells) {
-            cells.push(rxcxToCell(rxcx));
-        }
-        let sum = cage.value !== undefined ? cage.value : '';
-        let color = cage.outlineC == '#000000' ? undefined : cage.outlineC;
-        let sumColor = cage.fontC == '#000000' ? undefined : cage.fontC;
-        puzzle.cages.push([sum, cells, color, sumColor]);
-    }
-    
     data.thermometer = data.thermometer !== undefined ? data.thermometer : [];
     for (let thermo of data.thermometer) {
         let lines = [];
@@ -93,6 +82,21 @@ function loadFromFPuzzles(fpuzzles) {
         }
         puzzle.arrows.push(lines);
     }
+    
+    data.cage = data.cage !== undefined ? data.cage : [];
+    for (let cage of data.cage) {
+        let cells = [];
+        for (let rxcx of cage.cells) {
+            cells.push(rxcxToCell(rxcx));
+        }
+        let sum = cage.value !== undefined ? cage.value : '';
+        let color = cage.outlineC == '#000000' ? undefined : cage.outlineC;
+        let sumColor = cage.fontC == '#000000' ? undefined : cage.fontC;
+        puzzle.cages.push([sum, cells, color, sumColor]);
+    }
+    
+    puzzle.diagonals[0] = data['diagonal+'] !== undefined ? data['diagonal+'] : false;
+    puzzle.diagonals[1] = data['diagonal-'] !== undefined ? data['diagonal-'] : false;
     
     data.quadruple = data.quadruple !== undefined ? data.quadruple : [];
     for (let quad of data.quadruple) {
@@ -234,6 +238,9 @@ puzzle.arrows = [];
 
 // Format: [sum, cells: [[column, row], ...], color (default: #202020), sumColor (default: #303030)]
 puzzle.cages = [];
+
+// Format: positive?, negative?
+puzzle.diagonals = [false, false];
 
 // Format: [digits, column, row]
 puzzle.quads = [];
