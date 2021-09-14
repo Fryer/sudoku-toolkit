@@ -7,16 +7,56 @@
 <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@600&display=swap" rel="stylesheet">
 <style>
 body {
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+}
+#board-container, .sidebar {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 5px 0;
+}
+.board {
+    flex: 0 0 auto;
+}
+.panel {
+    width: max-content;
+    margin: 10px 20px;
+}
+button {
+    font-family: 'Mulish', sans-serif;
+    font-size: 30px;
+    color: #ffffff;
+    background: #607fbf;
+    border: 0;
+    border-radius: 10px;
     margin: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+button:active {
+    color: #dfdfdf;
+    background: #5070af;
+}
+.digit-button {
+    font-size: 60px;
+    width: 90px;
+    height: 90px;
+    padding: 0;
+}
+.delete-button {
+    font-size: 50px;
+    width: 290px;
+    height: 90px;
+    padding: 0;
 }
 </style>
 <link id="board-style" href="board-style.css" rel="stylesheet">
 </head>
 <body>
-<span id="board-container"></span>
-<script src="puzzle.js" type="module"></script>
-<script src="renderer.js" type="module"></script>
-<script src="input.js" type="module"></script>
+<div id="board-container"></div>
 <script type="module">
 import { loadFromFPuzzles } from './puzzle.js';
 import { createBoard } from './renderer.js';
@@ -33,7 +73,17 @@ startInput(board);
 
 window.board = board;
 </script>
-<button id="capture-button" style="vertical-align: top">Screenshot</button>
+<div class="sidebar">
+<div class="panel">
+<button class="digit-button">1</button><button class="digit-button">2</button><button class="digit-button">3</button><br>
+<button class="digit-button">4</button><button class="digit-button">5</button><button class="digit-button">6</button><br>
+<button class="digit-button">7</button><button class="digit-button">8</button><button class="digit-button">9</button><br>
+<button class="delete-button">&#10006;&#65038;</button>
+</div>
+<div class="panel">
+<button id="capture-button">Screenshot</button>
+</div>
+</div>
 <img id="capture-image" style="display: none">
 <canvas id="capture-canvas" width="905" height="905" style="display: none"></canvas>
 <script src="capture.js"></script>
