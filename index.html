@@ -6,34 +6,38 @@
 <script src="lz-string.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@600&display=swap" rel="stylesheet">
 <style>
+:root {
+    --panel-unit: calc(calc(100vh - 50px) / 900);
+}
 body {
     display: flex;
     justify-content: center;
     height: 100vh;
     margin: 0;
+    overflow: hidden;
 }
-#board-container, .sidebar {
+.content, .sidebar {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    margin: 5px 0;
 }
-.board {
-    flex: 0 0 auto;
+#board-container {
+    width: calc(100vh - 50px);
+    height: calc(100vh - 50px);
 }
 .panel {
     width: max-content;
-    margin: 10px 20px;
+    margin: calc(10 * var(--panel-unit)) calc(20 * var(--panel-unit));
 }
 button {
     font-family: 'Mulish', sans-serif;
-    font-size: 30px;
+    font-size: calc(30 * var(--panel-unit));
     color: #ffffff;
     background: #607fbf;
     border: 0;
-    border-radius: 10px;
-    margin: 5px;
-    padding: 10px 20px;
+    border-radius: calc(10 * var(--panel-unit));
+    margin: calc(5 * var(--panel-unit));
+    padding: calc(10 * var(--panel-unit)) calc(20 * var(--panel-unit));
     cursor: pointer;
 }
 button:active {
@@ -41,22 +45,24 @@ button:active {
     background: #5070af;
 }
 .digit-button {
-    font-size: 60px;
-    width: 90px;
-    height: 90px;
+    font-size: calc(60 * var(--panel-unit));
+    width: calc(90 * var(--panel-unit));
+    height: calc(90 * var(--panel-unit));
     padding: 0;
 }
 .delete-button {
-    font-size: 50px;
-    width: 290px;
-    height: 90px;
+    font-size: calc(50 * var(--panel-unit));
+    width: calc(290 * var(--panel-unit));
+    height: calc(90 * var(--panel-unit));
     padding: 0;
 }
 </style>
 <link id="board-style" href="board-style.css" rel="stylesheet">
 </head>
 <body>
+<div class="content">
 <div id="board-container"></div>
+</div>
 <script type="module">
 import { loadFromFPuzzles } from './puzzle.js';
 import { createBoard } from './renderer.js';

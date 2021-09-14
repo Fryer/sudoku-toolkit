@@ -4,10 +4,20 @@ export { createBoard };
 function createBoard(puzzle) {
     let board = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     board.setAttribute('class', 'board');
-    let boardSize = puzzle.size * 100 + 5;
-    board.setAttribute('width', boardSize + 'px');
-    board.setAttribute('height', boardSize + 'px');
-    board.setAttribute('viewBox', `-2.5, -2.5, ${boardSize}, ${boardSize}`);
+    board.padding = [2, 2, 2, 2];
+    board.size = [
+        puzzle.size * 100 + 1 + board.padding[0] + board.padding[2],
+        puzzle.size * 100 + 1 + board.padding[1] + board.padding[3]
+    ];
+    board.setAttribute('width', board.size[0]);
+    board.setAttribute('height', board.size[1]);
+    let viewBox = [
+        -0.5 - board.padding[0],
+        -0.5 - board.padding[1],
+        board.size[0],
+        board.size[1]
+    ];
+    board.setAttribute('viewBox', viewBox.join(', '));
     board.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
     board.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
     
@@ -144,8 +154,8 @@ function createBoard(puzzle) {
 
 function isInCell(x, y, margin) {
     let bbox = this.getBoundingClientRect();
-    x = x - bbox.x - 2;
-    y = y - bbox.y - 2;
+    x = (x - bbox.x) * this.size[0] / bbox.width - this.padding[0];
+    y = (y - bbox.y) * this.size[1] / bbox.height - this.padding[1];
     if (x < 0 || y < 0 || x > this.puzzle.size * 100 || y > this.puzzle.size * 100) {
         // Outside board.
         return false;
@@ -160,8 +170,8 @@ function isInCell(x, y, margin) {
 
 function cellPosition(x, y) {
     let bbox = this.getBoundingClientRect();
-    x = x - bbox.x - 2;
-    y = y - bbox.y - 2;
+    x = (x - bbox.x) * this.size[0] / bbox.width - this.padding[0];
+    y = (y - bbox.y) * this.size[1] / bbox.height - this.padding[1];
     let column = Math.floor(x / 100) + 1;
     let row = Math.floor(y / 100) + 1;
     return [column, row];
