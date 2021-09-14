@@ -293,11 +293,20 @@ function createOutline(board, cells, inset) {
 
 
 function drawSelection(cells) {
-    let path = createOutline(this, cells, 7.5);
-    let selection = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    selection.setAttribute('class', 'selection');
-    selection.setAttribute('d', path);
+    let selection = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     this.insertBefore(selection, this.grid);
+    
+    let fillPath = createOutline(this, cells, 0);
+    let selectionFill = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    selectionFill.setAttribute('class', 'selection');
+    selectionFill.setAttribute('d', fillPath);
+    selection.appendChild(selectionFill);
+    
+    let linePath = createOutline(this, cells, 7.5);
+    let selectionLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    selectionLine.setAttribute('class', 'selection-line');
+    selectionLine.setAttribute('d', linePath);
+    selection.appendChild(selectionLine);
     
     return selection;
 }

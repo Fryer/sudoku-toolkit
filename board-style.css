@@ -38,6 +38,9 @@
     fill: #408fff;
 }
 .selection {
+    fill: #408fff10;
+}
+.selection-line {
     stroke: #408fff7f;
     fill: none;
     stroke-width: 15;
