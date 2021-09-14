@@ -73,7 +73,9 @@ function mouseDown(event, board, inside) {
         if (i == selectedIndex && (board.deletingSelection || !(event.ctrlKey || event.shiftKey || event.altKey))) {
             // Clicked on last selected cell.
             deselectAll(board);
-            delete board.selectionStart;
+            if (board.deletingSelection) {
+                delete board.selectionStart;
+            }
             return;
         }
     }
