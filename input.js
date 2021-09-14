@@ -51,6 +51,7 @@ function mouseDown(event, board, inside) {
         return;
     }
     board.selectionStart = [x, y];
+    board.deletingSelection = event.altKey;
     if (!board.isInCell(x, y, 2)) {
         if (!event.ctrlKey && !event.shiftKey && !event.altKey) {
             deselectAll(board);
@@ -59,26 +60,31 @@ function mouseDown(event, board, inside) {
     }
     
     let [column, row] = board.cellPosition(x, y);
+    if (event.shiftKey) {
+        let i = board.puzzle.cellIndex(column, row);
+        if (board.selectedCells.has(i)) {
+            board.deletingSelection = true;
+        }
+    }
+    
     if (board.selectedCells.size == 1) {
-        let i = board.selectedCells.values().next().value;
-        let [selectedColumn, selectedRow] = board.puzzle.cellPosition(i);
-        if (column == selectedColumn && row == selectedRow) {
+        let i = board.puzzle.cellIndex(column, row);
+        let selectedIndex = board.selectedCells.values().next().value;
+        if (i == selectedIndex && (board.deletingSelection || !(event.ctrlKey || event.shiftKey || event.altKey))) {
             // Clicked on last selected cell.
-            if (!event.ctrlKey && !event.shiftKey) {
-                deselectAll(board);
-            }
+            deselectAll(board);
+            delete board.selectionStart;
             return;
         }
     }
-    if (!event.ctrlKey && !event.shiftKey) {
-        if (event.altKey) {
-            deselectCell(board, column, row);
-        }
-        else {
-            deselectAll(board);
-        }
+    
+    if (!event.ctrlKey && !event.shiftKey && !event.altKey) {
+        deselectAll(board);
     }
-    if (!event.altKey) {
+    if (board.deletingSelection) {
+        deselectCell(board, column, row);
+    }
+    else {
         selectCell(board, column, row);
     }
 }
@@ -112,13 +118,8 @@ function mouseMove(event, board) {
     if (board.isInCell(board.selectionStart[0], board.selectionStart[1], 2)) {
         let [startColumn, startRow] = board.cellPosition(...board.selectionStart);
         let startIndex = board.puzzle.cellIndex(startColumn, startRow);
-        if (!board.selectedCells.has(startIndex)) {
-            if (event.altKey) {
-                deselectCell(board, startColumn, startRow);
-            }
-            else {
-                selectCell(board, startColumn, startRow);
-            }
+        if (!board.selectedCells.has(startIndex) && !board.deletingSelection) {
+            selectCell(board, startColumn, startRow);
         }
     }
     
@@ -127,7 +128,7 @@ function mouseMove(event, board) {
     }
     
     let [column, row] = board.cellPosition(x, y);
-    if (event.altKey) {
+    if (board.deletingSelection) {
         deselectCell(board, column, row);
     }
     else {
@@ -222,24 +223,32 @@ function keyPress(event, board) {
         let deleteDigit = true;
         let deleteCenter = true;
         let deleteCorner = true;
-        for (let i of selectedCells) {
-            if (board.inputState[i].digit != '') {
-                deleteCenter = false;
-                deleteCorner = false;
-                break;
-            }
-            if (board.inputState[i].center.size > 0) {
-                deleteCorner = false;
-            }
+        if (event.ctrlKey && event.shiftKey) {
+            deleteDigit = false;
+            deleteCenter = true;
+            deleteCorner = true;
         }
-        if (event.shiftKey) {
+        else if (event.ctrlKey) {
+            deleteDigit = false;
+            deleteCenter = true;
+            deleteCorner = false;
+        }
+        else if (event.shiftKey) {
             deleteDigit = false;
             deleteCenter = false;
             deleteCorner = true;
         }
-        if (event.ctrlKey) {
-            deleteDigit = false;
-            deleteCenter = true;
+        else {
+            for (let i of selectedCells) {
+                if (board.inputState[i].digit != '') {
+                    deleteCenter = false;
+                    deleteCorner = false;
+                    break;
+                }
+                if (board.inputState[i].center.size > 0) {
+                    deleteCorner = false;
+                }
+            }
         }
         for (let i of selectedCells) {
             if (deleteDigit) {
@@ -256,7 +265,7 @@ function keyPress(event, board) {
         return;
     }
     
-    if (arrowMatch) {
+    if (arrowMatch && !board.selectionStart) {
         if (!board.cursor && !event.altKey) {
             selectCell(board, 1, 1);
             return;
