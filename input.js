@@ -232,13 +232,14 @@ function keyPress(event, board) {
                 deleteCorner = false;
             }
         }
+        if (event.shiftKey) {
+            deleteDigit = false;
+            deleteCenter = false;
+            deleteCorner = true;
+        }
         if (event.ctrlKey) {
             deleteDigit = false;
             deleteCenter = true;
-        }
-        if (event.shiftKey) {
-            deleteDigit = false;
-            deleteCorner = true;
         }
         for (let i of selectedCells) {
             if (deleteDigit) {
