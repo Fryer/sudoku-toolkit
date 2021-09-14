@@ -150,10 +150,10 @@ function loadFromFPuzzles(fpuzzles) {
             }
             puzzle.extras.push({
                 type: 'line',
-                before: 'cages',
+                before: 'arrows',
                 path: path,
                 width: line.width * 50,
-                color: line.outlineC
+                color: line.outlineC == '#000000' ? undefined : line.outlineC
             });
         }
     }
@@ -300,7 +300,7 @@ puzzle.kropki = [];
 //   width (default: 20),
 //   join: 'bevel' | 'miter' | 'round' (default: 'round'),
 //   cap: 'butt' | 'square' | 'round' (default: 'round'),
-//   color (default: '#7f7f7f')
+//   color (default: '#404040')
 // Polygon options:
 //   path: [[column, row], ...],
 //   width (default: 1.5),

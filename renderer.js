@@ -358,7 +358,7 @@ function drawArrow(board, lines) {
     arrowBulb.setAttribute('class', 'arrow-bulb');
     arrowBulb.setAttribute('cx', lines[0][0][0] * 100 - 50);
     arrowBulb.setAttribute('cy', lines[0][0][1] * 100 - 50);
-    arrowBulb.setAttribute('r', 35);
+    arrowBulb.setAttribute('r', 38.25);
     board.arrows.appendChild(arrowBulb);
 }
 
@@ -459,7 +459,7 @@ function drawExtraLine(board, extra) {
     let width = extra.width === undefined ? 20 : extra.width;
     let join = extra.join === undefined ? 'round' : extra.join;
     let cap = extra.cap === undefined ? 'round' : extra.cap;
-    let color = extra.color === undefined ? '#7f7f7f' : extra.color;
+    let color = extra.color === undefined ? '#404040' : extra.color;
     
     let extraLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     extraLine.setAttribute('d', path);

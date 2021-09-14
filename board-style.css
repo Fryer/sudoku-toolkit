@@ -53,7 +53,7 @@
     stroke-linecap: round;
 }
 .arrow-bulb, .arrow-line, .arrow-cap {
-    stroke: #505050;
+    stroke: #7f7f7f;
     stroke-width: 3.5;
 }
 .arrow-bulb {
