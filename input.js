@@ -1,12 +1,12 @@
 export { startInput };
 
 
-function startInput(board) {
+function startInput(board, panel) {
     board.addEventListener('mousedown', (event) => mouseDown(event, board, true));
     window.addEventListener('mousedown', (event) => mouseDown(event, board, false));
     window.addEventListener('mouseup', (event) => mouseUp(event, board));
     window.addEventListener('mousemove', (event) => mouseMove(event, board));
-    window.addEventListener('keydown', (event) => keyPress(event, board));
+    window.addEventListener('keydown', (event) => keyDown(event, board));
     
     board.inputState = [];
     for (let i = 0; i < board.puzzle.size ** 2; i++) {
@@ -30,6 +30,38 @@ function startInput(board) {
     }
     
     board.selectedCells = new Set();
+    
+    panel.addEventListener('mousedown', event => event.stopPropagation());
+    for (let button of panel.querySelectorAll('.digit-button')) {
+        let digit = button.textContent;
+        button.addEventListener('click', event => clickDigit(event, board, digit));
+    }
+    let deleteButton = panel.querySelector('.delete-button');
+    deleteButton.addEventListener('click', event => clickDelete(event, board));
+}
+
+
+function clickDigit(event, board, digit) {
+    let keyEvent = new KeyboardEvent('keydown', {
+        code: `Digit${digit}`,
+        ctrlKey: event.ctrlKey,
+        shiftKey: event.shiftKey,
+        altKey: event.altKey,
+        repeat: false
+    });
+    keyDown(keyEvent, board);
+}
+
+
+function clickDelete(event, board) {
+    let keyEvent = new KeyboardEvent('keydown', {
+        key: 'Delete',
+        ctrlKey: event.ctrlKey,
+        shiftKey: event.shiftKey,
+        altKey: event.altKey,
+        repeat: false
+    });
+    keyDown(keyEvent, board);
 }
 
 
@@ -139,7 +171,7 @@ function mouseMove(event, board) {
 }
 
 
-function keyPress(event, board) {
+function keyDown(event, board) {
     let digitMatch = event.code.match(/^Digit(?<digit>[1-9])$/);
     let deleteMatch = event.key.match(/^(Backspace|Delete)$/);
     let arrowMatch = event.key.match(/^(Arrow(?<arrow>Left|Up|Right|Down))$/);
