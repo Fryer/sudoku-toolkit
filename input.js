@@ -2,6 +2,8 @@ export { startInput };
 
 
 function startInput(board, panel) {
+    board.resetInput = reset;
+    
     board.addEventListener('mousedown', (event) => mouseDown(event, board, true));
     window.addEventListener('mousedown', (event) => mouseDown(event, board, false));
     window.addEventListener('mouseup', (event) => mouseUp(event, board));
@@ -38,6 +40,16 @@ function startInput(board, panel) {
     }
     let deleteButton = panel.querySelector('.delete-button');
     deleteButton.addEventListener('click', event => clickDelete(event, board));
+}
+
+
+function reset() {
+    this.inputState = [];
+    for (let i = 0; i < board.puzzle.size ** 2; i++) {
+        board.inputState.push({ given: false, digit: '', center: new Set(), corner: new Set() });
+    }
+    updateDigits(this);
+    deselectAll(this);
 }
 
 
