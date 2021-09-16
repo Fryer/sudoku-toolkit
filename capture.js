@@ -1,24 +1,44 @@
-'use strict';
+export { initCapture };
 
-let captureButton = document.getElementById('capture-button');
-let captureImage = document.getElementById('capture-image');
-let captureTab = null;
 
-captureButton.addEventListener('click', () => {
-    captureTab = window.open();
-    createBoardImage();
-});
+function initCapture(board, panel) {
+    panel.addEventListener('mousedown', event => event.stopPropagation());
+    
+    let captureButton = panel.querySelector('.capture-button');
+    captureButton.addEventListener('click', () => {
+        let captureTab = window.open();
+        
+        let captureImage = document.createElement('img');
+        captureImage.style.display = 'none';
+        captureImage.addEventListener('load', () => {
+            let canvas = document.createElement('canvas');
+            canvas.style.display = 'none';
+            canvas.width = board.size[0];
+            canvas.height = board.size[1];
+            document.body.appendChild(canvas);
+            
+            let ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(
+                board.padding[0],
+                board.padding[1],
+                board.size[0] - board.padding[0] - board.padding[2],
+                board.size[1] - board.padding[1] - board.padding[3]
+            );
+            ctx.drawImage(captureImage, 0, 0);
+            captureTab.location = canvas.toDataURL();
+            
+            canvas.remove();
+            captureImage.remove();
+        });
+        document.body.appendChild(captureImage);
+        
+        createBoardImage(board, captureImage);
+    });
+}
 
-captureImage.addEventListener('load', () => {
-    let canvas = document.getElementById('capture-canvas');
-    let ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(3, 3, 900, 900);
-    ctx.drawImage(captureImage, 0, 0);
-    captureTab.location = canvas.toDataURL();
-});
 
-async function createBoardImage() {
+async function createBoardImage(board, captureImage) {
     function blobToDataURL(blob) {
         return new Promise(resolve => {
             let reader = new FileReader();

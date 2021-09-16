@@ -122,6 +122,7 @@ import { loadFromFPuzzles } from './puzzle.js';
 import { createBoard } from './renderer.js';
 import { startInput } from './input.js';
 import { startTimer } from './timer.js';
+import { initCapture } from './capture.js';
 
 window.addEventListener('load', () => {
     let fpuzzles = (new URL(window.location)).searchParams.get('fpuzzles');
@@ -132,7 +133,8 @@ window.addEventListener('load', () => {
     let board = createBoard(puzzle);
     document.getElementById('board-container').appendChild(board);
     startInput(board, document.getElementById('input-panel'));
-    startTimer(board, document.getElementById('timer-panel'))
+    startTimer(board, document.getElementById('timer-panel'));
+    initCapture(board, document.getElementById('capture-panel'));
 
     window.board = board;
 });
@@ -168,12 +170,9 @@ window.addEventListener('load', () => {
 </div>
 <button class="delete-button">&#10006;&#65038;</button>
 </div>
-<div class="panel">
-<button id="capture-button">Screenshot</button>
+<div class="panel" id="capture-panel">
+<button class="capture-button">Screenshot</button>
 </div>
 </div>
-<img id="capture-image" style="display: none">
-<canvas id="capture-canvas" width="905" height="905" style="display: none"></canvas>
-<script src="capture.js"></script>
 </body>
 </html>
