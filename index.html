@@ -6,7 +6,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@600&display=swap" rel="stylesheet">
 <style>
 :root {
-    --panel-unit: calc(calc(100vh - 50px) / 900);
+    --grid-unit: calc(calc(95vh) / 900);
 }
 body {
     display: flex;
@@ -19,31 +19,42 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    margin: 0 calc(10 * var(--grid-unit));
 }
 #board-container {
-    width: calc(100vh - 50px);
-    height: calc(100vh - 50px);
+    width: calc(900 * var(--grid-unit));
+    height: calc(900 * var(--grid-unit));
+    margin: 0 calc(10 * var(--grid-unit));
 }
 #noscript {
     font-family: sans-serif;
-    font-size: 4vh;
+    font-size: calc(36 * var(--grid-unit));
     text-align: center;
+    line-height: 1;
     width: 100%;
-    margin-top: calc(48vh - 25px);
+    margin-top: calc(432 * var(--grid-unit));
+}
+.board {
+    vertical-align: top;
 }
 .panel {
-    width: max-content;
-    margin: calc(10 * var(--panel-unit)) calc(20 * var(--panel-unit));
+    display: flex;
+    flex-direction: column;
+    margin: calc(10 * var(--grid-unit)) 0;
+}
+.panel-row {
+    display: flex;
 }
 button {
     font-family: 'Mulish', sans-serif;
-    font-size: calc(30 * var(--panel-unit));
+    font-size: calc(30 * var(--grid-unit));
     color: #ffffff;
     background: #607fbf;
     border: 0;
-    border-radius: calc(10 * var(--panel-unit));
-    margin: calc(5 * var(--panel-unit));
-    padding: calc(10 * var(--panel-unit)) calc(20 * var(--panel-unit));
+    border-radius: calc(10 * var(--grid-unit));
+    width: max-content;
+    margin: calc(5 * var(--grid-unit));
+    padding: calc(10 * var(--grid-unit)) calc(20 * var(--grid-unit));
     cursor: pointer;
 }
 button:active {
@@ -51,15 +62,15 @@ button:active {
     background: #5070af;
 }
 .digit-button {
-    font-size: calc(60 * var(--panel-unit));
-    width: calc(90 * var(--panel-unit));
-    height: calc(90 * var(--panel-unit));
+    font-size: calc(60 * var(--grid-unit));
+    width: calc(90 * var(--grid-unit));
+    height: calc(90 * var(--grid-unit));
     padding: 0;
 }
 .delete-button {
-    font-size: calc(50 * var(--panel-unit));
-    width: calc(290 * var(--panel-unit));
-    height: calc(90 * var(--panel-unit));
+    font-size: calc(50 * var(--grid-unit));
+    width: calc(290 * var(--grid-unit));
+    height: calc(90 * var(--grid-unit));
     padding: 0;
 }
 </style>
@@ -90,9 +101,21 @@ window.addEventListener('load', () => {
 </div>
 <div class="sidebar">
 <div class="panel" id="input-panel">
-<button class="digit-button">1</button><button class="digit-button">2</button><button class="digit-button">3</button><br>
-<button class="digit-button">4</button><button class="digit-button">5</button><button class="digit-button">6</button><br>
-<button class="digit-button">7</button><button class="digit-button">8</button><button class="digit-button">9</button><br>
+<div class="panel-row">
+<button class="digit-button">1</button>
+<button class="digit-button">2</button>
+<button class="digit-button">3</button>
+</div>
+<div class="panel-row">
+<button class="digit-button">4</button>
+<button class="digit-button">5</button>
+<button class="digit-button">6</button>
+</div>
+<div class="panel-row">
+<button class="digit-button">7</button>
+<button class="digit-button">8</button>
+<button class="digit-button">9</button>
+</div>
 <button class="delete-button">&#10006;&#65038;</button>
 </div>
 <div class="panel">
