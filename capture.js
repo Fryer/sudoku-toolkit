@@ -37,7 +37,7 @@ async function createBoardImage() {
     let fontText = [...(new Set(board.textContent.replace(/\s/g, '')))].join('');
     if (fontText !== '') {
         let fontTextURI = encodeURIComponent(fontText);
-        let fontStyleResponse = await fetch(`https://fonts.googleapis.com/css2?family=Mulish:wght@600&text=${fontTextURI}`);
+        let fontStyleResponse = await fetch(`https://fonts.googleapis.com/css2?family=Lato:wght@700&text=${fontTextURI}`);
         fontStyle = await fontStyleResponse.text();
         let fontURLs = [...fontStyle.matchAll(/url\(([^)]+)\)/g)].map(match => match[1]);
         let fontResponses = await Promise.all(fontURLs.map(url => fetch(url)));

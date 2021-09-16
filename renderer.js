@@ -408,7 +408,7 @@ function drawCage(board, sum, cells, color, sumColor) {
         let cageSum = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         cageSum.setAttribute('class', 'cage-sum');
         cageSum.setAttribute('x', column * 100 - 87.5);
-        cageSum.setAttribute('y', row * 100 - 90);
+        cageSum.setAttribute('y', row * 100 - 89);
         if (sumColor !== undefined) {
             cageSum.setAttribute('style', `fill:${sumColor}`);
         }
