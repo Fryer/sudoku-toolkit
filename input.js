@@ -491,6 +491,9 @@ function updateDigits(board) {
     for (let column = 1; column <= board.puzzle.size; column++) {
         for (let row = 1; row <= board.puzzle.size; row++) {
             let i = board.puzzle.cellIndex(column, row);
+            if (board.inputState[i].given) {
+                continue;
+            }
             if (board.inputState[i].digit) {
                 board.puzzle.digits.push([board.inputState[i].digit, column, row]);
             }
@@ -501,7 +504,7 @@ function updateDigits(board) {
     for (let column = 1; column <= board.puzzle.size; column++) {
         for (let row = 1; row <= board.puzzle.size; row++) {
             let i = board.puzzle.cellIndex(column, row);
-            if (board.inputState[i].digit) {
+            if (board.inputState[i].given || board.inputState[i].digit) {
                 continue;
             }
             if (board.inputState[i].center.size > 0) {
@@ -514,7 +517,7 @@ function updateDigits(board) {
     for (let column = 1; column <= board.puzzle.size; column++) {
         for (let row = 1; row <= board.puzzle.size; row++) {
             let i = board.puzzle.cellIndex(column, row);
-            if (board.inputState[i].digit) {
+            if (board.inputState[i].given || board.inputState[i].digit) {
                 continue;
             }
             if (board.inputState[i].corner.size > 0) {
