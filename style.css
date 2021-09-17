@@ -64,9 +64,21 @@ button:active {
     height: calc(90 * var(--grid-unit));
     padding: 0;
 }
+.undo-button, .redo-button {
+    font-size: calc(80 * var(--grid-unit));
+    width: calc(90 * var(--grid-unit));
+    height: calc(90 * var(--grid-unit));
+    padding: 0;
+}
+.undo-button div, .redo-button div {
+    margin-top: calc(-20 * var(--grid-unit));
+}
+.redo-button {
+    transform: scale(-1, 1);
+}
 .delete-button {
     font-size: calc(50 * var(--grid-unit));
-    width: calc(290 * var(--grid-unit));
+    width: calc(90 * var(--grid-unit));
     height: calc(90 * var(--grid-unit));
     padding: 0;
 }

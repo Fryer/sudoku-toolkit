@@ -33,11 +33,19 @@ function startInput(board, panel) {
     
     board.selectedCells = new Set();
     
+    board.undoHistory = [];
+    board.undoIndex = -1;
+    pushUndo(board);
+    
     panel.addEventListener('mousedown', event => event.stopPropagation());
     for (let button of panel.querySelectorAll('.digit-button')) {
         let digit = button.textContent;
         button.addEventListener('click', event => clickDigit(event, board, digit));
     }
+    let undoButton = panel.querySelector('.undo-button');
+    undoButton.addEventListener('click', event => clickUndo(event, board));
+    let redoButton = panel.querySelector('.redo-button');
+    redoButton.addEventListener('click', event => clickRedo(event, board));
     let deleteButton = panel.querySelector('.delete-button');
     deleteButton.addEventListener('click', event => clickDelete(event, board));
 }
@@ -50,6 +58,7 @@ function reset() {
     }
     updateDigits(this);
     deselectAll(this);
+    pushUndo(board);
 }
 
 
@@ -59,6 +68,26 @@ function clickDigit(event, board, digit) {
         ctrlKey: event.ctrlKey,
         shiftKey: event.shiftKey,
         altKey: event.altKey,
+        repeat: false
+    });
+    keyDown(keyEvent, board);
+}
+
+
+function clickUndo(event, board) {
+    let keyEvent = new KeyboardEvent('keydown', {
+        key: 'z',
+        ctrlKey: true,
+        repeat: false
+    });
+    keyDown(keyEvent, board);
+}
+
+
+function clickRedo(event, board) {
+    let keyEvent = new KeyboardEvent('keydown', {
+        key: 'y',
+        ctrlKey: true,
         repeat: false
     });
     keyDown(keyEvent, board);
@@ -201,10 +230,14 @@ function keyDown(event, board) {
     }
     
     let digitMatch = event.code.match(/^Digit(?<digit>[1-9])$/);
+    let undoMatch = event.key.match(/^z$/i);
+    let redoMatch = event.key.match(/^y$/i);
     let deleteMatch = event.key.match(/^(Backspace|Delete)$/);
     let arrowMatch = event.key.match(/^(Arrow(?<arrow>Left|Up|Right|Down))$/);
     let isInput = false;
     isInput ||= digitMatch && !event.altKey && !event.metaKey;
+    isInput ||= undoMatch && event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey;
+    isInput ||= redoMatch && event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey;
     isInput ||= deleteMatch && !event.altKey && !event.metaKey;
     isInput ||= arrowMatch && !event.metaKey;
     isInput ||= event.key == 'a' && event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey;
@@ -275,6 +308,17 @@ function keyDown(event, board) {
             }
         }
         updateDigits(board);
+        pushUndo(board);
+        return;
+    }
+    
+    if (undoMatch) {
+        undo(board);
+        return;
+    }
+    
+    if (redoMatch) {
+        redo(board);
         return;
     }
     
@@ -324,6 +368,7 @@ function keyDown(event, board) {
             }
         }
         updateDigits(board);
+        pushUndo(board);
         return;
     }
     
@@ -479,4 +524,73 @@ function updateDigits(board) {
     }
     
     board.redrawDigits();
+}
+
+
+function copyInputState(state) {
+    return state.map(cell => ({
+        given: cell.given,
+        digit: cell.digit,
+        center: new Set(cell.center),
+        corner: new Set(cell.corner)
+    }));
+}
+
+
+function pushUndo(board) {
+    board.undoIndex++;
+    board.undoHistory[board.undoIndex] = {
+        inputState: copyInputState(board.inputState),
+        selectedCells: new Set(board.selectedCells),
+        cursor: (board.cursor ? [board.cursor.row, board.cursor.column] : undefined)
+    };
+    board.undoHistory.splice(board.undoIndex + 1);
+}
+
+
+function undo(board) {
+    if (board.undoIndex < 1) {
+        return;
+    }
+    board.undoIndex--;
+    
+    board.inputState = copyInputState(board.undoHistory[board.undoIndex].inputState);
+    updateDigits(board);
+    if (board.cursor) {
+        board.removeChild(board.cursor.selection);
+        delete board.cursor;
+    }
+    
+    board.selectedCells = new Set(board.undoHistory[board.undoIndex].selectedCells);
+    let cursor = board.undoHistory[board.undoIndex].cursor;
+    if (cursor === undefined) {
+        deselectAll(board);
+    }
+    else {
+        updateSelection(board, cursor[0], cursor[1]);
+    }
+}
+
+
+function redo(board) {
+    if (board.undoIndex >= board.undoHistory.length - 1) {
+        return;
+    }
+    board.undoIndex++;
+    
+    board.inputState = copyInputState(board.undoHistory[board.undoIndex].inputState);
+    updateDigits(board);
+    if (board.cursor) {
+        board.removeChild(board.cursor.selection);
+        delete board.cursor;
+    }
+    
+    board.selectedCells = new Set(board.undoHistory[board.undoIndex].selectedCells);
+    let cursor = board.undoHistory[board.undoIndex].cursor;
+    if (cursor === undefined) {
+        deselectAll(board);
+    }
+    else {
+        updateSelection(board, cursor[0], cursor[1]);
+    }
 }
