@@ -23,7 +23,7 @@ window.addEventListener('load', () => {
     let board = createBoard(puzzle);
     document.getElementById('board-container').appendChild(board);
     startInput(board, document.getElementById('input-panel'));
-    startTimer(board, document.getElementById('timer-panel'));
+    startTimer(board, document.getElementById('timer-panel'), document.getElementById('pause-overlay'));
     initCapture(board, document.getElementById('capture-panel'));
 
     window.board = board;
@@ -32,6 +32,9 @@ window.addEventListener('load', () => {
 </head>
 <body>
 <div class="content">
+<div id="pause-overlay">
+<div class="pause-overlay-panel">Paused</div>
+</div>
 <div id="board-container"><noscript><div id="noscript">This page requires JavaScript.</div></noscript></div>
 </div>
 <div class="sidebar">

@@ -1,55 +1,65 @@
 export { startTimer };
 
 
-function startTimer(board, panel) {
+function startTimer(board, panel, pauseOverlay) {
     let pauseButton = panel.querySelector('.pause-button');
     let timeField = panel.querySelector('.timer-time');
     let resetButton = panel.querySelector('.reset-button');
     
     panel.addEventListener('mousedown', event => event.stopPropagation());
-    pauseButton.addEventListener('click', () => clickPause(board, pauseButton, timeField));
-    resetButton.addEventListener('click', () => clickReset(board, pauseButton, timeField));
+    pauseButton.addEventListener('click', () => clickPause(board, pauseButton, timeField, pauseOverlay));
+    resetButton.addEventListener('click', () => clickReset(board, pauseButton, timeField, pauseOverlay));
+    pauseOverlay.addEventListener('click', () => clickPause(board, pauseButton, timeField, pauseOverlay));
     
     board.time = 0;
     timeField.value = '0:00';
-    unpause(board, timeField);
+    unpause(board, pauseButton, timeField, pauseOverlay);
 }
 
 
-function clickPause(board, pauseButton, timeField) {
+function clickPause(board, pauseButton, timeField, pauseOverlay) {
     if (board.paused) {
-        unpause(board, timeField);
+        unpause(board, pauseButton, timeField, pauseOverlay);
     }
     else {
-        pause(board, timeField);
+        pause(board, pauseButton, timeField, pauseOverlay);
     }
-    
-    pauseButton.textContent = board.paused ? '\u25b6\ufe0e' : '\u23f8\ufe0e';
-    pauseButton.className = board.paused ? 'play-button' : 'pause-button';
 }
 
 
-function clickReset(board, pauseButton, timeField) {
+function clickReset(board, pauseButton, timeField, pauseOverlay) {
     board.resetInput();
     
     cancelAnimationFrame(board.timerFrameRequest);
     board.time = 0;
     timeField.value = '0:00';
-    unpause(board, timeField);
+    unpause(board, pauseButton, timeField, pauseOverlay);
 }
 
 
-function pause(board, timeField) {
+function pause(board, pauseButton, timeField, pauseOverlay) {
     update(board, timeField);
     board.paused = true;
     cancelAnimationFrame(board.timerFrameRequest);
+    
+    pauseButton.textContent = '\u25b6\ufe0e';
+    pauseButton.className = 'play-button';
+    
+    pauseOverlay.style.display = 'unset';
+    board.classList.add('pause-blur');
 }
 
 
-function unpause(board, timeField) {
+function unpause(board, pauseButton, timeField, pauseOverlay) {
     board.paused = false;
     board.lastTimeUpdate = performance.now();
     updateLoop(board, timeField);
+    
+    pauseButton.textContent = '\u23f8\ufe0e';
+    pauseButton.className = 'pause-button';
+    
+    pauseOverlay.style.display = '';
+    board.classList.remove('pause-blur');
 }
 
 

@@ -78,6 +78,10 @@ function clickDelete(event, board) {
 
 
 function mouseDown(event, board, inside) {
+    if (board.paused) {
+        return;
+    }
+    
     if (event.button != 0) {
         if (board.selectionStart) {
             delete board.selectionStart;
@@ -137,6 +141,10 @@ function mouseDown(event, board, inside) {
 
 
 function mouseUp(event, board) {
+    if (board.paused) {
+        return;
+    }
+    
     if (event.button == 0 && board.selectionStart) {
         delete board.selectionStart;
     }
@@ -144,6 +152,10 @@ function mouseUp(event, board) {
 
 
 function mouseMove(event, board) {
+    if (board.paused) {
+        return;
+    }
+    
     if ((event.buttons & 1) == 0) {
         if (board.selectionStart) {
             delete board.selectionStart;
@@ -184,6 +196,10 @@ function mouseMove(event, board) {
 
 
 function keyDown(event, board) {
+    if (board.paused) {
+        return;
+    }
+    
     let digitMatch = event.code.match(/^Digit(?<digit>[1-9])$/);
     let deleteMatch = event.key.match(/^(Backspace|Delete)$/);
     let arrowMatch = event.key.match(/^(Arrow(?<arrow>Left|Up|Right|Down))$/);

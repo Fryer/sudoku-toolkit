@@ -18,6 +18,7 @@ body {
     width: calc(900 * var(--grid-unit));
     height: calc(900 * var(--grid-unit));
     margin: 0 calc(10 * var(--grid-unit));
+    overflow: hidden;
 }
 #noscript {
     font-family: Lato, sans-serif;
@@ -106,4 +107,28 @@ button:active {
     height: calc(50 * var(--grid-unit));
     padding: 0 calc(3 * var(--grid-unit)) 0 0;
     margin-left: 0;
+}
+#pause-overlay {
+    height: 0;
+    z-index: 1;
+    display: none;
+    cursor: pointer;
+}
+.pause-overlay-panel {
+    font-family: Lato, sans-serif;
+    font-size: calc(100 * var(--grid-unit));
+    font-weight: bold;
+    color: #303030;
+    border: calc(3 * var(--grid-unit)) solid #607fbf;
+    box-sizing: border-box;
+    width: calc(900 * var(--grid-unit));
+    height: calc(900 * var(--grid-unit));
+    margin: 0 calc(10 * var(--grid-unit));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.pause-blur {
+    filter: blur(calc(50 * var(--grid-unit))) grayscale(100%);
 }
