@@ -33,8 +33,8 @@ function createBoard(puzzle) {
     let stylePlaceholder = document.createElement('style');
     board.appendChild(stylePlaceholder);
     
-    let defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-    board.appendChild(defs);
+    board.defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    board.appendChild(board.defs);
     
     let arrowMarker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
     arrowMarker.setAttribute('id', 'arrow-cap');
@@ -47,7 +47,7 @@ function createBoard(puzzle) {
     arrowMarkerPath.setAttribute('class', 'arrow-cap');
     arrowMarkerPath.setAttribute('d', 'M-20 -20 L0 0 L-20 20');
     arrowMarker.appendChild(arrowMarkerPath);
-    defs.appendChild(arrowMarker);
+    board.defs.appendChild(arrowMarker);
     
     board.thermos = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     board.appendChild(board.thermos);
@@ -112,7 +112,7 @@ function createBoard(puzzle) {
         drawThermo(board, thermo);
     }
     for (let arrow of puzzle.arrows) {
-        drawArrow(board, arrow);
+        drawArrow(board, ...arrow);
     }
     for (let cage of puzzle.cages) {
         drawCage(board, ...cage);
@@ -348,18 +348,73 @@ function drawThermo(board, lines) {
 }
 
 
-function drawArrow(board, lines) {
+let arrowMaskId = 0;
+
+function drawArrow(board, cells, lines) {
+    /* The great arrow mask hack of 2021:
+     * Firefox apprears to have a bug in the way it draws lines with masks.
+     * It seems like it calculates the bounding box of the line's path without considering line width.
+     * This leads to the line being clipped wrongly, and either disappearing completely or having its ends trimmed,
+     * depending on the angle the line is drawn at and how close it is to its bounding box at any given point.
+     * To work around this, I've constructed a "hack path" that I add to each line, which is made up of 2 segments
+     * that are drawn outside of the viewport.
+     * The result is that the bounding box for the line gets expanded to include the segements in the hack path,
+     * thus fixing the clipping issue resulting from a more compact bounding box.
+     * --------------------------------------------------------------------------------
+     * Note about future improvements:
+     * Because this method of drawing arrows uses 2 masks for each arrow, it's slow and causes noticable input lag.
+     * An improvement would be to use an ouline algorithm to generate paths for the arrow bulbs.
+     */
+    let bboxL = -board.padding[0];
+    let bboxT = -board.padding[1];
+    let bboxR = board.size[0] + board.padding[2];
+    let bboxB = board.size[1] + board.padding[3];
+    let bboxPath = `M${bboxL} ${bboxT} L${bboxR} ${bboxT} L${bboxR} ${bboxB} L${bboxL} ${bboxB} Z`;
+    let hackPath = `M${bboxL - 100} ${bboxT - 100} L${bboxR + 100} ${bboxT - 100} L${bboxR + 100} ${bboxB + 100}`;
+    
+    if (cells.length == 1) {
+        // One bulb cell: Arrow line mask is a circle.
+        let arrowLineMask = document.createElementNS('http://www.w3.org/2000/svg', 'mask');
+        arrowLineMask.setAttribute('id', 'arrow-line-mask-' + arrowMaskId);
+        let arrowLineMaskWhite = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        arrowLineMaskWhite.setAttribute('fill', '#ffffff');
+        arrowLineMaskWhite.setAttribute('d', bboxPath);
+        arrowLineMask.appendChild(arrowLineMaskWhite);
+        let arrowLineMaskBlack = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        arrowLineMaskBlack.setAttribute('cx', cells[0][0] * 100 - 50);
+        arrowLineMaskBlack.setAttribute('cy', cells[0][1] * 100 - 50);
+        arrowLineMaskBlack.setAttribute('r', 36.5);
+        arrowLineMask.appendChild(arrowLineMaskBlack);
+        board.defs.appendChild(arrowLineMask);
+    }
+    
+    if (cells.length > 1) {
+        // Multiple bulb cells: Arrow line mask is a line.
+        let x = cells[0][0] * 100 - 50;
+        let y = cells[0][1] * 100 - 50;
+        let path = `M${x} ${y}`;
+        for (let i = 1; i < cells.length; i++) {
+            let x = cells[i][0] * 100 - 50;
+            let y = cells[i][1] * 100 - 50;
+            path += ` L${x} ${y}`;
+        }
+        let arrowLineMask = document.createElementNS('http://www.w3.org/2000/svg', 'mask');
+        arrowLineMask.setAttribute('id', 'arrow-line-mask-' + arrowMaskId);
+        let arrowLineMaskWhite = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        arrowLineMaskWhite.setAttribute('fill', '#ffffff');
+        arrowLineMaskWhite.setAttribute('d', bboxPath);
+        arrowLineMask.appendChild(arrowLineMaskWhite);
+        let arrowLineMaskBlack = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        arrowLineMaskBlack.setAttribute('class', 'arrow-mask-black');
+        arrowLineMaskBlack.setAttribute('d', path);
+        arrowLineMask.appendChild(arrowLineMaskBlack);
+        board.defs.appendChild(arrowLineMask);
+    }
+    
     for (let cells of lines) {
         let x = cells[0][0] * 100 - 50;
         let y = cells[0][1] * 100 - 50;
-        let nextX = cells[1][0] * 100 - 50;
-        let nextY = cells[1][1] * 100 - 50;
-        let dx = nextX - x;
-        let dy = nextY - y;
-        let d = Math.sqrt(dx * dx + dy * dy);
-        x += 35 * dx / d;
-        y += 35 * dy / d;
-        let path = `M${x} ${y}`;
+        let path = `${hackPath} M${x} ${y}`;
         for (let i = 1; i < cells.length; i++) {
             let x = cells[i][0] * 100 - 50;
             let y = cells[i][1] * 100 - 50;
@@ -370,15 +425,58 @@ function drawArrow(board, lines) {
         arrowLine.setAttribute('class', 'arrow-line');
         arrowLine.setAttribute('d', path);
         arrowLine.setAttribute('marker-end', 'url(#arrow-cap)');
+        if (cells.length > 0) {
+            arrowLine.setAttribute('mask', `url(#arrow-line-mask-${arrowMaskId})`);
+        }
         board.arrows.appendChild(arrowLine);
     }
     
-    let arrowBulb = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    arrowBulb.setAttribute('class', 'arrow-bulb');
-    arrowBulb.setAttribute('cx', lines[0][0][0] * 100 - 50);
-    arrowBulb.setAttribute('cy', lines[0][0][1] * 100 - 50);
-    arrowBulb.setAttribute('r', 38.25);
-    board.arrows.appendChild(arrowBulb);
+    if (cells.length == 1) {
+        // One bulb cell: Bulb is a circle with an outline.
+        let arrowBulb = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        arrowBulb.setAttribute('class', 'arrow-bulb');
+        arrowBulb.setAttribute('cx', cells[0][0] * 100 - 50);
+        arrowBulb.setAttribute('cy', cells[0][1] * 100 - 50);
+        arrowBulb.setAttribute('r', 38.25);
+        board.arrows.appendChild(arrowBulb);
+    }
+    
+    if (cells.length > 1) {
+        // Multiple bulb cells: Bulb is a filled box with a line outline mask.
+        let x = cells[0][0] * 100 - 50;
+        let y = cells[0][1] * 100 - 50;
+        let path = `M${x} ${y}`;
+        for (let i = 1; i < cells.length; i++) {
+            let x = cells[i][0] * 100 - 50;
+            let y = cells[i][1] * 100 - 50;
+            path += ` L${x} ${y}`;
+        }
+        
+        let arrowBulbMask = document.createElementNS('http://www.w3.org/2000/svg', 'mask');
+        arrowBulbMask.setAttribute('id', 'arrow-bulb-mask-' + arrowMaskId);
+        let arrowBulbMaskWhite = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        arrowBulbMaskWhite.setAttribute('class', 'arrow-mask-white');
+        arrowBulbMaskWhite.setAttribute('d', path);
+        arrowBulbMask.appendChild(arrowBulbMaskWhite);
+        let arrowBulbMaskBlack = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        arrowBulbMaskBlack.setAttribute('class', 'arrow-mask-black');
+        arrowBulbMaskBlack.setAttribute('d', path);
+        arrowBulbMask.appendChild(arrowBulbMaskBlack);
+        board.defs.appendChild(arrowBulbMask);
+        
+        let arrowBulbFill = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        arrowBulbFill.setAttribute('class', 'arrow-bulbline-fill');
+        arrowBulbFill.setAttribute('d', path);
+        board.arrows.appendChild(arrowBulbFill);
+        
+        let arrowBulbStroke = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        arrowBulbStroke.setAttribute('class', 'arrow-bulbline-stroke');
+        arrowBulbStroke.setAttribute('d', bboxPath);
+        arrowBulbStroke.setAttribute('mask', `url(#arrow-bulb-mask-${arrowMaskId})`);
+        board.arrows.appendChild(arrowBulbStroke);
+    }
+    
+    arrowMaskId++;
 }
 
 

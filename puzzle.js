@@ -72,6 +72,10 @@ function loadFromFPuzzles(fpuzzles) {
     
     data.arrow = data.arrow !== undefined ? data.arrow : [];
     for (let arrow of data.arrow) {
+        let cells = [];
+        for (let rxcx of arrow.cells) {
+            cells.push(rxcxToCell(rxcx));
+        }
         let lines = [];
         for (let part of arrow.lines) {
             let line = [];
@@ -80,7 +84,7 @@ function loadFromFPuzzles(fpuzzles) {
             }
             lines.push(line);
         }
-        puzzle.arrows.push(lines);
+        puzzle.arrows.push([cells, lines]);
     }
     
     data.cage = data.cage !== undefined ? data.cage : [];
@@ -271,10 +275,10 @@ function cellPosition(index) {
 
 let puzzle = {};
 
-// Format: [line: [cell: [column, row], ...], ...]
+// Format: [line: [[column, row], ...], ...]
 puzzle.thermos = [];
 
-// Format: [line: [cell: [column, row], ...], ...]
+// Format: [cells: [[column, row], ...], [line: [[column, row], ...], ...]]
 puzzle.arrows = [];
 
 // Format: [sum, cells: [[column, row], ...], color (default: #202020), sumColor (default: #303030)]

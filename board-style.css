@@ -60,7 +60,7 @@
     stroke-width: 3.5;
 }
 .arrow-bulb {
-    fill: #ffffffcf;
+    fill: #ffffff7f;
 }
 .arrow-line {
     fill: none;
@@ -68,6 +68,25 @@
 }
 .arrow-cap {
     fill: none;
+}
+.arrow-mask-white, .arrow-mask-black, .arrow-bulbline-fill {
+    fill: none;
+    stroke-width: 80;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+.arrow-mask-white {
+    stroke: #ffffff;
+}
+.arrow-mask-black {
+    stroke: #000000;
+    stroke-width: 73;
+}
+.arrow-bulbline-fill {
+    stroke: #ffffff7f;
+}
+.arrow-bulbline-stroke {
+    fill: #7f7f7f;
 }
 .cage-line {
     stroke: #202020;
