@@ -352,7 +352,7 @@ let arrowMaskId = 0;
 
 function drawArrow(board, cells, lines) {
     /* The great arrow mask hack of 2021:
-     * Firefox apprears to have a bug in the way it draws lines with masks.
+     * Firefox appears to have a bug in the way it draws lines with masks.
      * It seems like it calculates the bounding box of the line's path without considering line width.
      * This leads to the line being clipped wrongly, and either disappearing completely or having its ends trimmed,
      * depending on the angle the line is drawn at and how close it is to its bounding box at any given point.
@@ -363,7 +363,7 @@ function drawArrow(board, cells, lines) {
      * --------------------------------------------------------------------------------
      * Note about future improvements:
      * Because this method of drawing arrows uses 2 masks for each arrow, it's slow and causes noticable input lag.
-     * An improvement would be to use an ouline algorithm to generate paths for the arrow bulbs.
+     * An improvement would be to use an outline algorithm to generate paths for the arrow bulbs.
      */
     let bboxL = -board.padding[0];
     let bboxT = -board.padding[1];

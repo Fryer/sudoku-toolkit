@@ -56,6 +56,10 @@ function reset() {
     for (let i = 0; i < board.puzzle.size ** 2; i++) {
         board.inputState.push({ given: false, digit: '', center: new Set(), corner: new Set() });
     }
+    for (let given of board.puzzle.givens) {
+        let i = board.puzzle.cellIndex(given[1], given[2]);
+        board.inputState[i].given = true;
+    }
     updateDigits(this);
     deselectAll(this);
     pushUndo(board);
