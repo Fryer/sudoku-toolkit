@@ -111,7 +111,7 @@ function clickDelete(event, board) {
 
 
 function mouseDown(event, board, inside) {
-    if (board.paused) {
+    if (board.paused && !board.stopped) {
         return;
     }
     
@@ -174,7 +174,7 @@ function mouseDown(event, board, inside) {
 
 
 function mouseUp(event, board) {
-    if (board.paused) {
+    if (board.paused && !board.stopped) {
         return;
     }
     
@@ -185,7 +185,7 @@ function mouseUp(event, board) {
 
 
 function mouseMove(event, board) {
-    if (board.paused) {
+    if (board.paused && !board.stopped) {
         return;
     }
     
@@ -229,7 +229,7 @@ function mouseMove(event, board) {
 
 
 function keyDown(event, board) {
-    if (board.paused) {
+    if (board.paused && !board.stopped) {
         return;
     }
     

@@ -2,74 +2,96 @@ export { startTimer };
 
 
 function startTimer(board, panel, pauseOverlay) {
-    let pauseButton = panel.querySelector('.pause-button');
-    let timeField = panel.querySelector('.timer-time');
-    let resetButton = panel.querySelector('.reset-button');
+    board.pauseOverlay = pauseOverlay;
+    
+    board.pauseButton = panel.querySelector('.pause-button');
+    board.timeField = panel.querySelector('.timer-time');
+    board.resetButton = panel.querySelector('.reset-button');
     
     panel.addEventListener('mousedown', event => event.stopPropagation());
-    pauseButton.addEventListener('click', () => clickPause(board, pauseButton, timeField, pauseOverlay));
-    resetButton.addEventListener('click', () => clickReset(board, pauseButton, timeField, pauseOverlay));
-    pauseOverlay.addEventListener('click', () => clickPause(board, pauseButton, timeField, pauseOverlay));
+    board.pauseButton.addEventListener('click', () => clickPause(board));
+    board.resetButton.addEventListener('click', () => clickReset(board));
+    pauseOverlay.addEventListener('click', () => clickPause(board));
     
     board.time = 0;
-    timeField.value = '0:00';
-    unpause(board, pauseButton, timeField, pauseOverlay);
+    board.timeField.value = '0:00';
+    unpause(board);
+    
+    board.stopTimer = stopTimer;
 }
 
 
-function clickPause(board, pauseButton, timeField, pauseOverlay) {
+function stopTimer() {
+    if (this.paused) {
+        this.pauseOverlay.style.display = '';
+        this.classList.remove('pause-blur');
+        return;
+    }
+    
+    update(this);
+    this.paused = true;
+    this.stopped = true;
+    cancelAnimationFrame(this.timerFrameRequest);
+    
+    this.pauseButton.textContent = '\u25b6\ufe0e';
+    this.pauseButton.className = 'play-button';
+}
+
+
+function clickPause(board) {
     if (board.paused) {
-        unpause(board, pauseButton, timeField, pauseOverlay);
+        unpause(board);
     }
     else {
-        pause(board, pauseButton, timeField, pauseOverlay);
+        pause(board);
     }
 }
 
 
-function clickReset(board, pauseButton, timeField, pauseOverlay) {
+function clickReset(board) {
     board.resetInput();
     
     cancelAnimationFrame(board.timerFrameRequest);
     board.time = 0;
-    timeField.value = '0:00';
-    unpause(board, pauseButton, timeField, pauseOverlay);
+    board.timeField.value = '0:00';
+    unpause(board);
 }
 
 
-function pause(board, pauseButton, timeField, pauseOverlay) {
-    update(board, timeField);
+function pause(board) {
+    update(board);
     board.paused = true;
     cancelAnimationFrame(board.timerFrameRequest);
     
-    pauseButton.textContent = '\u25b6\ufe0e';
-    pauseButton.className = 'play-button';
+    board.pauseButton.textContent = '\u25b6\ufe0e';
+    board.pauseButton.className = 'play-button';
     
-    pauseOverlay.style.display = 'unset';
+    board.pauseOverlay.style.display = 'unset';
     board.classList.add('pause-blur');
 }
 
 
-function unpause(board, pauseButton, timeField, pauseOverlay) {
+function unpause(board) {
+    board.stopped = false;
     board.paused = false;
     board.lastTimeUpdate = performance.now();
-    updateLoop(board, timeField);
+    updateLoop(board);
     
-    pauseButton.textContent = '\u23f8\ufe0e';
-    pauseButton.className = 'pause-button';
+    board.pauseButton.textContent = '\u23f8\ufe0e';
+    board.pauseButton.className = 'pause-button';
     
-    pauseOverlay.style.display = '';
+    board.pauseOverlay.style.display = '';
     board.classList.remove('pause-blur');
 }
 
 
-function updateLoop(board, timeField) {
-    update(board, timeField);
-    board.timerFrameRequest = requestAnimationFrame(() => updateLoop(board, timeField));
+function updateLoop(board) {
+    update(board);
+    board.timerFrameRequest = requestAnimationFrame(() => updateLoop(board));
 }
 
 
-function update(board, timeField) {
+function update(board) {
     let lastSeconds = Math.floor(board.time / 1000);
     let dt = performance.now() - board.lastTimeUpdate;
     board.time += dt;
@@ -89,5 +111,5 @@ function update(board, timeField) {
         timeString += `${Math.floor(seconds / 60) % 60}:`.padStart(2, 0);
     }
     timeString += `${seconds % 60}`.padStart(2, 0);
-    timeField.value = timeString;
+    board.timeField.value = timeString;
 }

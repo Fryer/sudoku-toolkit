@@ -13,6 +13,7 @@ import { loadFromFPuzzles } from './puzzle.js';
 import { createBoard } from './renderer.js';
 import { startInput } from './input.js';
 import { startTimer } from './timer.js';
+import { check } from './check.js';
 import { initCapture } from './capture.js';
 
 window.addEventListener('load', () => {
@@ -21,11 +22,18 @@ window.addEventListener('load', () => {
         fpuzzles = 'N4IgzglgXgpiBcBOANCA5gJwgEwQbT1DQgDcYA7ABQoGMIAbAWQEMMBrMBcgV3voF9kRUhWrk6TVhy68BQ9CKq0GLdp3g8+g4WSXiVU9Zrk7RyyWplb5xXWImrpG2doV3zjoy5uL7By87WpnoOhlYCALrIhG5m+hZOxq4kzPTccPAAjKi2FAgALhjpOb4eYYEmsSH+id7BfgleQVUNnuGuudWN7T7u8W0VHaX95Um9caEBSVExna2jdS1lU4tzy7XNayMrm8OTG5Vb+02HezUnQ33HPfXrFzO32weXE+c3S08X410DY4/Xg2+8x2pyub0B/3Bfw+AOm0Uh3QhMKhqzOiOhRxRzRSaQyACYSroCkUYITXujUWCKbsqb9KeS6TSGQstA9kdTQcyQS8fizObzuUC7u9MRyecDnkLPiK0YzIvD2XLxcKkaKlVLYfSBZKEerdXzldLVbKDWy1QaNVj+RKvvrBXadYqLQ7bSAcekEAAWMnkYnFJ32gPPM0mwPmsOhx3hqOR13RuOxmW051B+5RED5AAWMAwAFsAPa5mD5HP4UD0CDkGDqAggABKnoAwgBWECoBuNgBsbfrTYA7D2OwAOEARCKuCtVmt4XstwdNz2DgDMjaXo/H8kn1fwM47rfbC8Hzcbi/bndXR8bePnV5va7H/HTGAoACNmL74DEt9P65lb+28QvACT0HQDWwfdMAHdMwgMAAAccxrctK23T9dxXEdgIHds/0w+tAMQUDGxHCDUDYBh6BzGhmDQDIYhoGA+Bretj0I9N3QyEBu0fVBsAgAAzfic1oOjQAYpj8BYxtsKk7sNzExj6GYutjxkjsB3kkBxKUyS60AzIiOvdjUg9eAQDXVxtOU481wPC9jNxBAQEXHiQAwZh8ggfMyy0xTlKHYjBz7QLNKs3Tj33KTF1CvzdIC6922CozUA4pyLPkMLP3rYLIrrYLopSkzOJc9MAEduGYbAijgyifMy3c/1s38QOApq9JAhz0hrTIYokrL2u7LDly7YaNMK3EawJJdep0/qAragLT3rRAgOWjrxq6/BvWbZBOxm6zAvbVjB3PPC63PNiNtQvBO2QPtkCHZBEHHdM6AwGhas/BS+t3FaDPTN8wBgRsnIAYgAQUySHIZ7fNuHyLcQbM0GhwABgAUXRgAxLGe34/NyHyJGQFB1GyfJntIJwLMEFRgA6PEdpAbMIDQTN8lphnm0s2K5v/esAoM9sVoStb/tQQHgbB6GoaFkA4YRlDiZRjHsdx1B8cJ5XyYp1AqewGn4HpxnUBZtmOaNunuYy3nfv5ut4tHCXmCB5WZZh1AFcRsG0cxnG8YJomwZ1snKepzNOZN5mYFZ9mEGyEB3zQT7PW5p8YBofIk8++jbfrc8xpASXlZxvtmwAESar2lbBxtMnRodm0izWg+RkPUbDg2I8tqOzbjnvre+2bd2CtTgrk53XbB0uK6r+HveRuuG6bgOteDkPO8N+mmb7i3jcH3yfrWtSVsGgXpMHAKJ6Ll2peRmfK9h+ea8X+vG+bwPtY3vXw/jq3TZjubSOTNs4ZAALRLlRq5aitE6p5zrH+JaCC5w4RGsBJBgEz7tTUoBM6K4kEriwSuQuqUzIAAl0YABlKEAHkn6KyrF/HWq9W4k3biAHmR8Oxyw7KLFSddLzJTdEVJydZ6ELxJjjZhGtP7TyxmjUOnDh7ZQEYle2gtL63k6pxAA4uIl+bDUZSI7jItebdUYACEsaKJtlw/KQUUHnyQQFcCV0nIWP0Yw9eZN/amNYaTVGaN/auT4mAZgL5KLYHoPmYgNB8DpkKOkai5A+LYA8tWfMcFPIExrOmLcPlvw7manwwCbVAIYLnGOT2z8vGL1Rp2VGjYTEgH1lvOm3oQCwQAHIwEgo2HJhRmCVgtokmAE4UI/jrBhIialcJEUIsBEi6Zq61JJg0ppDTN7d3pkuVA3Ten9PIGAQZwy/RjPHEAA==';
     }
     let puzzle = loadFromFPuzzles(fpuzzles);
+    
+    // Add the board to the window object to simplify debugging.
     window.board = createBoard(puzzle);
     document.getElementById('board-container').appendChild(board);
+    
     startInput(board, document.getElementById('input-panel'));
     startTimer(board, document.getElementById('timer-panel'), document.getElementById('pause-overlay'));
-    initCapture(board, document.getElementById('capture-panel'));
+    
+    let actionsPanel = document.getElementById('actions-panel');
+    let checkButton = actionsPanel.querySelector('.check-button');
+    checkButton.addEventListener('click', () => check(board));
+    initCapture(board, document.getElementById('actions-panel'));
     
     let title = document.getElementById('title');
     title.textContent = puzzle.title;
@@ -77,8 +85,11 @@ window.addEventListener('load', () => {
 <button class="delete-button">&#10006;&#65038;</button>
 </div>
 </div>
-<div class="panel" id="capture-panel">
+<div class="panel" id="actions-panel">
+<div class="panel-row">
+<button class="check-button">Check</button>
 <button class="capture-button">Screenshot</button>
+</div>
 </div>
 </div>
 </body>
