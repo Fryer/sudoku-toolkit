@@ -8,6 +8,8 @@ function loadFromFPuzzles(fpuzzles) {
     
     let puzzle = {
         size: data.size,
+        title: '',
+        author: '',
         thermos: [],
         arrows: [],
         cages: [],
@@ -23,6 +25,9 @@ function loadFromFPuzzles(fpuzzles) {
     
     puzzle.cellIndex = cellIndex;
     puzzle.cellPosition = cellPosition;
+    
+    puzzle.title = data.title ? data.title : 'Sudoku';
+    puzzle.author = data.author ? data.author : '';
     
     function rxcxToCell(rxcx) {
         let match = rxcx.match(/R([0-9]+)C([0-9]+)/);
@@ -274,6 +279,12 @@ function cellPosition(index) {
 { // <PUZZLE FORMAT>
 
 let puzzle = {};
+
+// Format: columns, rows
+puzzle.size = [9, 9];
+
+puzzle.title = '';
+puzzle.author = '';
 
 // Format: [line: [[column, row], ...], ...]
 puzzle.thermos = [];
