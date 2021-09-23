@@ -61,6 +61,8 @@ function createBoard(puzzle) {
     board.appendChild(board.quads);
     board.kropki = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     board.appendChild(board.kropki);
+    board.xv = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    board.appendChild(board.xv);
     board.givens = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     board.appendChild(board.givens);
     board.digits = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -122,6 +124,9 @@ function createBoard(puzzle) {
     }
     for (let kropki of puzzle.kropki) {
         drawKropki(board, ...kropki);
+    }
+    for (let xv of puzzle.xv) {
+        drawXV(board, ...xv);
     }
     
     for (let extra of puzzle.extras) {
@@ -559,6 +564,28 @@ function drawKropki(board, value, type, column, row, horizontal) {
         kropkiValue.setAttribute('y', y);
         kropkiValue.textContent = value;
         board.kropki.appendChild(kropkiValue);
+    }
+}
+
+
+function drawXV(board, value, column, row, horizontal) {
+    let x = column * 100 - (horizontal ? 0 : 50);
+    let y = row * 100 - (horizontal ? 50 : 0);
+    
+    let xvCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    xvCircle.setAttribute('class', 'xv-circle');
+    xvCircle.setAttribute('cx', x);
+    xvCircle.setAttribute('cy', y);
+    xvCircle.setAttribute('r', 15);
+    board.xv.appendChild(xvCircle);
+    
+    if (value !== '') {
+        let xvValue = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        xvValue.setAttribute('class', 'xv-value');
+        xvValue.setAttribute('x', x);
+        xvValue.setAttribute('y', y);
+        xvValue.textContent = value;
+        board.xv.appendChild(xvValue);
     }
 }
 

@@ -101,11 +101,16 @@
     font-size: 20px;
     dominant-baseline: hanging;
 }
-.difference-value, .ratio-value, .quad-digits {
+.quad-digits, .difference-value, .ratio-value {
     fill: #303030;
     font-size: 20px;
     text-anchor: middle;
     dominant-baseline: central;
+}
+.quad-circle {
+    stroke: #202020;
+    fill: #ffffff;
+    stroke-width: 1.5;
 }
 .difference-circle {
     stroke: #202020;
@@ -120,8 +125,13 @@
 .ratio-value {
     fill: #dfdfdf;
 }
-.quad-circle {
-    stroke: #202020;
+.xv-circle {
     fill: #ffffff;
-    stroke-width: 1.5;
+}
+.xv-value {
+    fill: #303030;
+    font-size: 30px;
+    font-weight: normal;
+    text-anchor: middle;
+    dominant-baseline: central;
 }

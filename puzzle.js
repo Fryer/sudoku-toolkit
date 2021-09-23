@@ -16,6 +16,7 @@ function loadFromFPuzzles(fpuzzles) {
         diagonals: [false, false],
         quads: [],
         kropki: [],
+        xv: [],
         extras: [],
         givens: [],
         digits: [],
@@ -150,6 +151,18 @@ function loadFromFPuzzles(fpuzzles) {
         puzzle.kropki.push([value, 'ratio', column, row, horizontal]);
     }
     
+    data.xv = data.xv !== undefined ? data.xv : [];
+    for (let xv of data.xv) {
+        let cells = [
+            rxcxToCell(xv.cells[0]),
+            rxcxToCell(xv.cells[1])
+        ];
+        let horizontal = cells[0][1] == cells[1][1];
+        let column = Math.min(cells[0][0], cells[1][0]);
+        let row = Math.min(cells[0][1], cells[1][1]);
+        puzzle.xv.push([xv.value, column, row, horizontal]);
+    }
+    
     data.line = data.line !== undefined ? data.line : [];
     for (let line of data.line) {
         for (let part of line.lines) {
@@ -280,9 +293,7 @@ function cellPosition(index) {
 
 let puzzle = {};
 
-// Format: columns, rows
-puzzle.size = [9, 9];
-
+puzzle.size = 9;
 puzzle.title = '';
 puzzle.author = '';
 
@@ -304,10 +315,13 @@ puzzle.quads = [];
 // Format: [value, type: 'difference' | 'ratio', column, row, horizontal?]
 puzzle.kropki = [];
 
+// Format: [value, column, row, horizontal?]
+puzzle.xv = [];
+
 // Format:
 //   {
 //     type: 'line' | 'polygon' | 'circle' | 'text',
-//     before: 'thermos' | 'cages' | 'grid' | 'quads' | 'kropki' | 'givens' | '' (default: 'givens'),
+//     before: '<constraint>' | '' (default: 'givens'),
 //     options...
 //   }
 // Line options:
