@@ -176,9 +176,9 @@ function createBoard(puzzle) {
 
 
 function isInCell(x, y, margin) {
-    let bbox = this.getBoundingClientRect();
-    x = (x - bbox.x) * this.size[0] / bbox.width - this.padding[0];
-    y = (y - bbox.y) * this.size[1] / bbox.height - this.padding[1];
+    let screenCTM = this.getScreenCTM();
+    x = (x - screenCTM.e) / screenCTM.a + 0.5;
+    y = (y - screenCTM.f) / screenCTM.d + 0.5;
     if (x < 0 || y < 0 || x > this.puzzle.size * 100 || y > this.puzzle.size * 100) {
         // Outside board.
         return false;
@@ -192,9 +192,9 @@ function isInCell(x, y, margin) {
 
 
 function cellPosition(x, y) {
-    let bbox = this.getBoundingClientRect();
-    x = (x - bbox.x) * this.size[0] / bbox.width - this.padding[0];
-    y = (y - bbox.y) * this.size[1] / bbox.height - this.padding[1];
+    let screenCTM = this.getScreenCTM();
+    x = (x - screenCTM.e) / screenCTM.a + 0.5;
+    y = (y - screenCTM.f) / screenCTM.d + 0.5;
     let column = Math.floor(x / 100) + 1;
     let row = Math.floor(y / 100) + 1;
     return [column, row];
