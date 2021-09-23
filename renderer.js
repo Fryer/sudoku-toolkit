@@ -49,6 +49,19 @@ function createBoard(puzzle) {
     arrowMarker.appendChild(arrowMarkerPath);
     board.defs.appendChild(arrowMarker);
     
+    let littleKillerMarker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+    littleKillerMarker.setAttribute('id', 'little-killer-cap');
+    littleKillerMarker.setAttribute('markerWidth', 100);
+    littleKillerMarker.setAttribute('markerHeight', 100);
+    littleKillerMarker.setAttribute('markerUnits', 'userSpaceOnUse');
+    littleKillerMarker.setAttribute('viewBox', '-50 -50 100 100');
+    littleKillerMarker.setAttribute('orient', 'auto-start-reverse');
+    let littleKillerMarkerPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    littleKillerMarkerPath.setAttribute('class', 'little-killer-arrow');
+    littleKillerMarkerPath.setAttribute('d', 'M-10 -10 L0 0 L-10 10');
+    littleKillerMarker.appendChild(littleKillerMarkerPath);
+    board.defs.appendChild(littleKillerMarker);
+    
     board.thermos = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     board.appendChild(board.thermos);
     board.arrows = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -63,6 +76,8 @@ function createBoard(puzzle) {
     board.appendChild(board.kropki);
     board.xv = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     board.appendChild(board.xv);
+    board.littleKillers = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    board.appendChild(board.littleKillers);
     board.givens = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     board.appendChild(board.givens);
     board.digits = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -127,6 +142,9 @@ function createBoard(puzzle) {
     }
     for (let xv of puzzle.xv) {
         drawXV(board, ...xv);
+    }
+    for (let littleKiller of puzzle.littleKillers) {
+        drawLittleKiller(board, ...littleKiller);
     }
     
     for (let extra of puzzle.extras) {
@@ -194,6 +212,34 @@ function redrawDigits() {
     for (let cornerMark of this.puzzle.cornerMarks) {
         drawCornerMark(this, ...cornerMark);
     }
+}
+
+
+function expandPadding(board, left, top, right, bottom) {
+    if (left <= board.padding[0] && top <= board.padding[1] && right <= board.padding[2] && bottom <= board.padding[3]) {
+        // No change.
+        return;
+    }
+    
+    board.padding = [
+        Math.max(board.padding[0], left),
+        Math.max(board.padding[1], top),
+        Math.max(board.padding[2], right),
+        Math.max(board.padding[3], bottom)
+    ];
+    board.size = [
+        board.puzzle.size * 100 + 1 + board.padding[0] + board.padding[2],
+        board.puzzle.size * 100 + 1 + board.padding[1] + board.padding[3]
+    ];
+    board.setAttribute('width', board.size[0]);
+    board.setAttribute('height', board.size[1]);
+    let viewBox = [
+        -0.5 - board.padding[0],
+        -0.5 - board.padding[1],
+        board.size[0],
+        board.size[1]
+    ];
+    board.setAttribute('viewBox', viewBox.join(', '));
 }
 
 
@@ -579,14 +625,39 @@ function drawXV(board, value, column, row, horizontal) {
     xvCircle.setAttribute('r', 15);
     board.xv.appendChild(xvCircle);
     
-    if (value !== '') {
-        let xvValue = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        xvValue.setAttribute('class', 'xv-value');
-        xvValue.setAttribute('x', x);
-        xvValue.setAttribute('y', y);
-        xvValue.textContent = value;
-        board.xv.appendChild(xvValue);
-    }
+    let xvValue = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    xvValue.setAttribute('class', 'xv-value');
+    xvValue.setAttribute('x', x);
+    xvValue.setAttribute('y', y);
+    xvValue.textContent = value;
+    board.xv.appendChild(xvValue);
+}
+
+
+function drawLittleKiller(board, sum, column, row, right, down) {
+    let expandLeft = column < 1 ? 80 : 0;
+    let expandUp = row < 1 ? 80 : 0;
+    let expandRight = column > board.puzzle.size ? 80 : 0;
+    let expandDown = row > board.puzzle.size ? 80 : 0;
+    expandPadding(board, expandLeft, expandUp, expandRight, expandDown);
+    
+    let x = column * 100 - 50;
+    let y = row * 100 - 50;
+    let dx = right ? 1 : -1;
+    let dy = down ? 1 : -1;
+    
+    let littleKillerArrow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    littleKillerArrow.setAttribute('class', 'little-killer-arrow');
+    littleKillerArrow.setAttribute('d', `M${x + dx * 30} ${y + dy * 30} L${x + dx * 45} ${y + dy * 45}`);
+    littleKillerArrow.setAttribute('marker-end', 'url(#little-killer-cap)');
+    board.littleKillers.appendChild(littleKillerArrow);
+    
+    let littleKillerSum = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    littleKillerSum.setAttribute('class', 'little-killer-sum');
+    littleKillerSum.setAttribute('x', x);
+    littleKillerSum.setAttribute('y', y);
+    littleKillerSum.textContent = sum;
+    board.littleKillers.appendChild(littleKillerSum);
 }
 
 

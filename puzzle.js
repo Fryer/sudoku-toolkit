@@ -17,6 +17,7 @@ function loadFromFPuzzles(fpuzzles) {
         quads: [],
         kropki: [],
         xv: [],
+        littleKillers: [],
         extras: [],
         givens: [],
         digits: [],
@@ -161,6 +162,14 @@ function loadFromFPuzzles(fpuzzles) {
         let column = Math.min(cells[0][0], cells[1][0]);
         let row = Math.min(cells[0][1], cells[1][1]);
         puzzle.xv.push([xv.value, column, row, horizontal]);
+    }
+    
+    data.littlekillersum = data.littlekillersum !== undefined ? data.littlekillersum : [];
+    for (let littlekillersum of data.littlekillersum) {
+        let cell = rxcxToCell(littlekillersum.cell);
+        let right = littlekillersum.direction[1] == 'R';
+        let down = littlekillersum.direction[0] == 'D';
+        puzzle.littleKillers.push([littlekillersum.value, cell[0], cell[1], right, down]);
     }
     
     data.line = data.line !== undefined ? data.line : [];
@@ -317,6 +326,9 @@ puzzle.kropki = [];
 
 // Format: [value, column, row, horizontal?]
 puzzle.xv = [];
+
+// Format: [sum, column, row, right?, down?]
+puzzle.littleKillers = [];
 
 // Format:
 //   {
