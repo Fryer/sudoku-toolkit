@@ -66,6 +66,8 @@ function createBoard(puzzle) {
     board.appendChild(board.thermos);
     board.arrows = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     board.appendChild(board.arrows);
+    board.parity = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    board.appendChild(board.parity);
     board.cages = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     board.appendChild(board.cages);
     board.grid = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -130,6 +132,9 @@ function createBoard(puzzle) {
     }
     for (let arrow of puzzle.arrows) {
         drawArrow(board, ...arrow);
+    }
+    for (let parity of puzzle.parity) {
+        drawParity(board, ...parity);
     }
     for (let cage of puzzle.cages) {
         drawCage(board, ...cage);
@@ -528,6 +533,30 @@ function drawArrow(board, cells, lines) {
     }
     
     arrowMaskId++;
+}
+
+
+function drawParity(board, even, column, row) {
+    let x = column * 100 - 50;
+    let y = row * 100 - 50;
+    
+    if (even) {
+        let evenSquare = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        evenSquare.setAttribute('class', 'even-square');
+        evenSquare.setAttribute('x', x - 35);
+        evenSquare.setAttribute('y', y - 35);
+        evenSquare.setAttribute('width', 70);
+        evenSquare.setAttribute('height', 70);
+        board.parity.appendChild(evenSquare);
+    }
+    else {
+        let oddCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        oddCircle.setAttribute('class', 'odd-circle');
+        oddCircle.setAttribute('cx', x);
+        oddCircle.setAttribute('cy', y);
+        oddCircle.setAttribute('r', 35);
+        board.parity.appendChild(oddCircle);
+    }
 }
 
 

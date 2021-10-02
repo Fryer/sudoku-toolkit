@@ -18,8 +18,8 @@
 	stroke-width: 1.5;
 }
 .diagonal-line {
-	stroke: #609fffcf;
-	stroke-width: 2;
+	stroke: #609f609f;
+	stroke-width: 2.5;
 }
 .given, .digit {
     font-size: 70px;
@@ -87,6 +87,12 @@
 }
 .arrow-bulbline-stroke {
     fill: #7f7f7f;
+}
+.even-square {
+    fill: #7f9fbf7f;
+}
+.odd-circle {
+    fill: #bf9f7f7f;
 }
 .cage-line {
     stroke: #202020;

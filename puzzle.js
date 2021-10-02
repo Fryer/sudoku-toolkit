@@ -11,6 +11,7 @@ function loadFromFPuzzles(fpuzzles) {
         title: '',
         author: '',
         thermos: [],
+        parity: [],
         arrows: [],
         cages: [],
         diagonals: [false, false],
@@ -92,6 +93,18 @@ function loadFromFPuzzles(fpuzzles) {
             lines.push(line);
         }
         puzzle.arrows.push([cells, lines]);
+    }
+    
+    data.even = data.even !== undefined ? data.even : [];
+    for (let even of data.even) {
+        let cell = rxcxToCell(even.cell);
+        puzzle.parity.push([true, cell[0], cell[1]]);
+    }
+    
+    data.odd = data.odd !== undefined ? data.odd : [];
+    for (let odd of data.odd) {
+        let cell = rxcxToCell(odd.cell);
+        puzzle.parity.push([false, cell[0], cell[1]]);
     }
     
     data.cage = data.cage !== undefined ? data.cage : [];
@@ -311,6 +324,9 @@ puzzle.thermos = [];
 
 // Format: [cells: [[column, row], ...], [line: [[column, row], ...], ...]]
 puzzle.arrows = [];
+
+// Format: [even?, column, row]
+puzzle.parity = [];
 
 // Format: [sum, cells: [[column, row], ...], color (default: #202020), sumColor (default: #303030)]
 puzzle.cages = [];
