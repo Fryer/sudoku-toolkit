@@ -235,7 +235,7 @@ function loadFromFPuzzles(fpuzzles) {
             puzzle.extras.push({
                 type: 'text',
                 text: rectangle.value,
-                position: [column - 0.5, row - 0.5],
+                position: [column, row],
                 size: Math.min(40, 100 * rectangle.width / rectangle.value.length),
                 angle: rectangle.angle,
                 color: rectangle.fontC == '#000000' ? undefined : rectangle.fontC
@@ -256,7 +256,7 @@ function loadFromFPuzzles(fpuzzles) {
         row /= circle.cells.length;
         puzzle.extras.push({
             type: 'circle',
-            center: [column - 0.5, row - 0.5],
+            center: [column, row],
             radius: [circle.width * 50, circle.height * 50],
             angle: circle.angle,
             color: circle.outlineC == '#000000' ? undefined : circle.outlineC,
@@ -266,7 +266,7 @@ function loadFromFPuzzles(fpuzzles) {
             puzzle.extras.push({
                 type: 'text',
                 text: circle.value,
-                position: [column - 0.5, row - 0.5],
+                position: [column, row],
                 size: Math.min(40, 100 * circle.width / circle.value.length),
                 angle: circle.angle,
                 color: circle.fontC == '#000000' ? undefined : circle.fontC
@@ -288,7 +288,7 @@ function loadFromFPuzzles(fpuzzles) {
         puzzle.extras.push({
             type: 'text',
             text: text.value,
-            position: [column - 0.5, row - 0.5],
+            position: [column, row],
             size: text.size * 80,
             angle: text.angle,
             color: text.fontC == '#000000' ? undefined : text.fontC

@@ -235,7 +235,18 @@ function redrawDigits() {
 }
 
 
-function expandPadding(board, left, top, right, bottom) {
+function expandPadding(board, cells) {
+    let left = 0;
+    let top = 0;
+    let right = 0;
+    let bottom = 0;
+    for (let cell of cells) {
+        left = Math.max(left, cell[0] < 1 ? (80 - cell[0] * 100) : 0);
+        top = Math.max(top, cell[1] < 1 ? (80 - cell[1] * 100) : 0);
+        right = Math.max(right, cell[0] > board.puzzle.size ? ((cell[0] - board.puzzle.size) * 100 - 20) : 0);
+        bottom = Math.max(bottom, cell[1] > board.puzzle.size ? ((cell[1] - board.puzzle.size) * 100 - 20) : 0);
+    }
+    
     if (left <= board.padding[0] && top <= board.padding[1] && right <= board.padding[2] && bottom <= board.padding[3]) {
         // No change.
         return;
@@ -394,6 +405,8 @@ function drawSelection(cells) {
 
 
 function drawThermo(board, lines) {
+    expandPadding(board, lines.flat());
+    
     for (let cells of lines) {
         let x = cells[0][0] * 100 - 50;
         let y = cells[0][1] * 100 - 50;
@@ -422,6 +435,8 @@ function drawThermo(board, lines) {
 let arrowMaskId = 0;
 
 function drawArrow(board, cells, lines) {
+    expandPadding(board, [...cells, ...lines.flat()]);
+    
     /* The great arrow mask hack of 2021:
      * Firefox appears to have a bug in the way it draws lines with masks.
      * It seems like it calculates the bounding box of the line's path without considering line width.
@@ -552,6 +567,8 @@ function drawArrow(board, cells, lines) {
 
 
 function drawParity(board, even, column, row) {
+    expandPadding(board, [[column, row]]);
+    
     let x = column * 100 - 50;
     let y = row * 100 - 50;
     
@@ -576,6 +593,8 @@ function drawParity(board, even, column, row) {
 
 
 function drawCage(board, sum, cells, color, sumColor) {
+    expandPadding(board, cells);
+    
     let path = createOutline(board, cells, 10);
     let cageLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     cageLine.setAttribute('class', 'cage-line');
@@ -612,6 +631,8 @@ function drawCage(board, sum, cells, color, sumColor) {
 
 
 function drawQuad(board, digits, column, row) {
+    expandPadding(board, [[column, row], [column + 1, row + 1]]);
+    
     let x = column * 100;
     let y = row * 100;
     
@@ -637,6 +658,13 @@ function drawQuad(board, digits, column, row) {
 
 
 function drawKropki(board, value, type, column, row, horizontal) {
+    if (horizontal) {
+        expandPadding(board, [[column, row], [column + 1, row]]);
+    }
+    else {
+        expandPadding(board, [[column, row], [column, row + 1]]);
+    }
+    
     let x = column * 100 - (horizontal ? 0 : 50);
     let y = row * 100 - (horizontal ? 50 : 0);
     
@@ -659,6 +687,13 @@ function drawKropki(board, value, type, column, row, horizontal) {
 
 
 function drawXV(board, value, column, row, horizontal) {
+    if (horizontal) {
+        expandPadding(board, [[column, row], [column + 1, row]]);
+    }
+    else {
+        expandPadding(board, [[column, row], [column, row + 1]]);
+    }
+    
     let x = column * 100 - (horizontal ? 0 : 50);
     let y = row * 100 - (horizontal ? 50 : 0);
     
@@ -679,11 +714,7 @@ function drawXV(board, value, column, row, horizontal) {
 
 
 function drawLittleKiller(board, sum, column, row, right, down) {
-    let expandLeft = column < 1 ? 80 : 0;
-    let expandUp = row < 1 ? 80 : 0;
-    let expandRight = column > board.puzzle.size ? 80 : 0;
-    let expandDown = row > board.puzzle.size ? 80 : 0;
-    expandPadding(board, expandLeft, expandUp, expandRight, expandDown);
+    expandPadding(board, [[column, row]]);
     
     let x = column * 100 - 50;
     let y = row * 100 - 50;
@@ -706,6 +737,8 @@ function drawLittleKiller(board, sum, column, row, right, down) {
 
 
 function drawExtraLine(board, extra) {
+    expandPadding(board, extra.path);
+    
     let x = extra.path[0][0] * 100 - 50;
     let y = extra.path[0][1] * 100 - 50;
     let path = `M${x} ${y}`;
@@ -739,6 +772,18 @@ function drawExtraLine(board, extra) {
 
 
 function drawExtraPolygon(board, extra) {
+    let minColumn = 1;
+    let minRow = 1;
+    let maxColumn = 1;
+    let maxRow = 1;
+    for (let [column, row] of extra.path) {
+        minColumn = Math.min(minColumn, column < 0.45 ? column + 0.2 : 1);
+        minRow = Math.min(minRow, row < 0.45 ? row + 0.2 : 1);
+        maxColumn = Math.max(maxColumn, column > board.puzzle.size + 0.55 ? column - 0.2 : 1);
+        maxRow = Math.max(maxRow, row > board.puzzle.size + 0.55 ? row - 0.2 : 1);
+    }
+    expandPadding(board, [[minColumn, minRow], [maxColumn, maxRow]]);
+    
     let x = extra.path[0][0] * 100 - 50;
     let y = extra.path[0][1] * 100 - 50;
     let path = `M${x} ${y}`;
@@ -770,8 +815,10 @@ function drawExtraPolygon(board, extra) {
 
 
 function drawExtraCircle(board, extra) {
-    let x = extra.center[0] * 100;
-    let y = extra.center[1] * 100;
+    expandPadding(board, [extra.center]);
+    
+    let x = extra.center[0] * 100 - 50;
+    let y = extra.center[1] * 100 - 50;
     let rx = extra.radius === undefined ? 40 : extra.radius[0];
     let ry = extra.radius === undefined ? 40 : extra.radius[1];
     
@@ -802,8 +849,10 @@ function drawExtraCircle(board, extra) {
 
 
 function drawExtraText(board, extra) {
-    let x = extra.position[0] * 100;
-    let y = extra.position[1] * 100;
+    expandPadding(board, [extra.position]);
+    
+    let x = extra.position[0] * 100 - 50;
+    let y = extra.position[1] * 100 - 50;
     let halign = 'middle';
     let valign = 'central';
     let size = extra.size === undefined ? 20 : extra.size;
@@ -853,6 +902,8 @@ function drawExtraText(board, extra) {
 
 
 function drawGiven(board, digit, column, row) {
+    expandPadding(board, [[column, row]]);
+    
     let given = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     given.setAttribute('class', 'given');
     given.setAttribute('x', column * 100 - 50);
