@@ -43,7 +43,7 @@
 .selection-line {
     stroke: #408fff7f;
     fill: none;
-    stroke-width: 15;
+    stroke-width: 12.5;
 }
 .thermo-bulb {
     fill: #cfcfcf;

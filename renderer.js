@@ -368,7 +368,7 @@ function drawSelection(cells) {
     selectionFill.setAttribute('d', fillPath);
     selection.appendChild(selectionFill);
     
-    let linePath = createOutline(this, cells, 7.5);
+    let linePath = createOutline(this, cells, 6.25);
     let selectionLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     selectionLine.setAttribute('class', 'selection-line');
     selectionLine.setAttribute('d', linePath);
@@ -543,10 +543,10 @@ function drawParity(board, even, column, row) {
     if (even) {
         let evenSquare = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
         evenSquare.setAttribute('class', 'even-square');
-        evenSquare.setAttribute('x', x - 35);
-        evenSquare.setAttribute('y', y - 35);
-        evenSquare.setAttribute('width', 70);
-        evenSquare.setAttribute('height', 70);
+        evenSquare.setAttribute('x', x - 37.5);
+        evenSquare.setAttribute('y', y - 37.5);
+        evenSquare.setAttribute('width', 75);
+        evenSquare.setAttribute('height', 75);
         board.parity.appendChild(evenSquare);
     }
     else {
@@ -554,7 +554,7 @@ function drawParity(board, even, column, row) {
         oddCircle.setAttribute('class', 'odd-circle');
         oddCircle.setAttribute('cx', x);
         oddCircle.setAttribute('cy', y);
-        oddCircle.setAttribute('r', 35);
+        oddCircle.setAttribute('r', 37.5);
         board.parity.appendChild(oddCircle);
     }
 }
