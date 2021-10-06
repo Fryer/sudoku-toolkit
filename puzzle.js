@@ -38,8 +38,8 @@ function loadFromFPuzzles(fpuzzles) {
         return [match[2] | 0, match[1] | 0];
     }
     
-    for (let row = 1; row <= 9; row++) {
-        for (let column = 1; column <= 9; column++) {
+    for (let row = 1; row <= data.size; row++) {
+        for (let column = 1; column <= data.size; column++) {
             let cell = data.grid[row - 1][column - 1];
             if (cell.given) {
                 puzzle.givens.push([cell.value, column, row]);

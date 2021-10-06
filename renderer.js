@@ -118,6 +118,15 @@ function createBoard(puzzle) {
     let boxLines = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     boxLines.setAttribute('class', 'box-line');
     switch (puzzle.size) {
+        case 4:
+            boxLines.setAttribute('d', 'M0 200 L400 200 M200 0 L200 400');
+            break;
+        case 6:
+            boxLines.setAttribute('d', 'M0 200 L600 200 M0 400 L600 400 M300 0 L300 600');
+            break;
+        case 8:
+            boxLines.setAttribute('d', 'M0 200 L800 200 M0 400 L800 400 M0 600 L800 600 M400 0 L400 800');
+            break;
         case 9:
             boxLines.setAttribute('d', 'M0 300 L900 300 M0 600 L900 600 M300 0 L300 900 M600 0 L600 900');
             break;
