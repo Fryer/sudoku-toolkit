@@ -12,7 +12,7 @@ function startInput(board, panel) {
     
     board.inputState = [];
     for (let i = 0; i < board.puzzle.size ** 2; i++) {
-        board.inputState.push({ given: false, digit: '', center: new Set(), corner: new Set() });
+        board.inputState.push({ given: false, digit: '', center: new Set(), corner: new Set(), color: new Set() });
     }
     for (let given of board.puzzle.givens) {
         let i = board.puzzle.cellIndex(given[1], given[2]);
@@ -29,6 +29,10 @@ function startInput(board, panel) {
     for (let corner of board.puzzle.cornerMarks) {
         let i = board.puzzle.cellIndex(corner[1], corner[2]);
         board.inputState[i].corner = new Set(corner[0]);
+    }
+    for (let color of board.puzzle.colors) {
+        let i = board.puzzle.cellIndex(color[1], color[2]);
+        board.inputState[i].color = new Set(color[0]);
     }
     
     board.selectedCells = new Set();
@@ -54,7 +58,7 @@ function startInput(board, panel) {
 function reset() {
     this.inputState = [];
     for (let i = 0; i < board.puzzle.size ** 2; i++) {
-        board.inputState.push({ given: false, digit: '', center: new Set(), corner: new Set() });
+        board.inputState.push({ given: false, digit: '', center: new Set(), corner: new Set(), color: new Set() });
     }
     for (let given of board.puzzle.givens) {
         let i = board.puzzle.cellIndex(given[1], given[2]);
@@ -141,7 +145,7 @@ function mouseDown(event, board, inside) {
     }
     
     let [column, row] = board.cellPosition(x, y);
-    if (event.shiftKey) {
+    if (event.ctrlKey || event.shiftKey) {
         let i = board.puzzle.cellIndex(column, row);
         if (board.selectedCells.has(i)) {
             board.deletingSelection = true;
@@ -256,18 +260,39 @@ function keyDown(event, board) {
         return;
     }
     
-    let selectedCells = new Set();
-    for (let i of board.selectedCells) {
-        if (!board.inputState[i].given) {
-            selectedCells.add(i);
-        }
-    }
-    
     if (digitMatch) {
+        let digit = digitMatch.groups.digit;
+        if (board.selectedCells.size != 0 && event.ctrlKey && event.shiftKey) {
+            let hasColor = true;
+            for (let i of board.selectedCells) {
+                if (!board.inputState[i].color.has(digit)) {
+                    hasColor = false;
+                    break;
+                }
+            }
+            if (hasColor) {
+                for (let i of board.selectedCells) {
+                    board.inputState[i].color.delete(digit);
+                }
+            }
+            else {
+                for (let i of board.selectedCells) {
+                    board.inputState[i].color.add(digit);
+                }
+            }
+            updateDigits(board);
+            pushUndo(board);
+            return;
+        }
+        let selectedCells = new Set();
+        for (let i of board.selectedCells) {
+            if (!board.inputState[i].given) {
+                selectedCells.add(i);
+            }
+        }
         if (selectedCells.size == 0) {
             return;
         }
-        let digit = digitMatch.groups.digit;
         if (event.ctrlKey) {
             let hasMark = true;
             for (let i of selectedCells) {
@@ -327,40 +352,48 @@ function keyDown(event, board) {
     }
     
     if (deleteMatch) {
-        if (selectedCells.size == 0) {
+        if (board.selectedCells.size == 0) {
             return;
         }
         let deleteDigit = true;
         let deleteCenter = true;
         let deleteCorner = true;
+        let deleteColor = true;
         if (event.ctrlKey && event.shiftKey) {
             deleteDigit = false;
-            deleteCenter = true;
-            deleteCorner = true;
+            deleteCenter = false;
+            deleteCorner = false;
+            deleteColor = true;
         }
         else if (event.ctrlKey) {
             deleteDigit = false;
             deleteCenter = true;
             deleteCorner = false;
+            deleteColor = false;
         }
         else if (event.shiftKey) {
             deleteDigit = false;
             deleteCenter = false;
             deleteCorner = true;
+            deleteColor = false;
         }
         else {
-            for (let i of selectedCells) {
+            for (let i of board.selectedCells) {
                 if (board.inputState[i].digit != '') {
                     deleteCenter = false;
                     deleteCorner = false;
-                    break;
+                    deleteColor = false;
                 }
-                if (board.inputState[i].center.size > 0) {
+                else if (board.inputState[i].center.size > 0) {
                     deleteCorner = false;
+                    deleteColor = false;
+                }
+                else if (board.inputState[i].corner.size > 0) {
+                    deleteColor = false;
                 }
             }
         }
-        for (let i of selectedCells) {
+        for (let i of board.selectedCells) {
             if (deleteDigit) {
                 board.inputState[i].digit = '';
             }
@@ -369,6 +402,9 @@ function keyDown(event, board) {
             }
             if (deleteCorner) {
                 board.inputState[i].corner = new Set();
+            }
+            if (deleteColor) {
+                board.inputState[i].color = new Set();
             }
         }
         updateDigits(board);
@@ -530,6 +566,28 @@ function updateDigits(board) {
         }
     }
     
+    const COLORS = [
+        '#ff20207f',
+        '#ff8f207f',
+        '#ffdf207f',
+        '#8fff207f',
+        '#20df207f',
+        '#20dfff7f',
+        '#2060ff7f',
+        '#df20ff7f',
+        '#4040407f'
+    ];
+    board.puzzle.colors = [];
+    for (let column = 1; column <= board.puzzle.size; column++) {
+        for (let row = 1; row <= board.puzzle.size; row++) {
+            let i = board.puzzle.cellIndex(column, row);
+            if (board.inputState[i].color.size > 0) {
+                let colorDigits = [...board.inputState[i].color.values()].sort();
+                board.puzzle.colors.push([colorDigits.map(digit => COLORS[digit - 1]), column, row]);
+            }
+        }
+    }
+    
     board.redrawDigits();
 }
 
@@ -539,7 +597,8 @@ function copyInputState(state) {
         given: cell.given,
         digit: cell.digit,
         center: new Set(cell.center),
-        corner: new Set(cell.corner)
+        corner: new Set(cell.corner),
+        color: new Set(cell.color)
     }));
 }
 

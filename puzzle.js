@@ -23,7 +23,8 @@ function loadFromFPuzzles(fpuzzles) {
         givens: [],
         digits: [],
         centerMarks: [],
-        cornerMarks: []
+        cornerMarks: [],
+        colors: []
     };
     
     puzzle.cellIndex = cellIndex;
@@ -391,6 +392,9 @@ puzzle.centerMarks = [];
 
 // Format: [[digit, ...], column, row]
 puzzle.cornerMarks = [];
+
+// Format: [[color, ...], column, row]
+puzzle.colors = [];
 
 } // </PUZZLE FORMAT>
 

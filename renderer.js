@@ -62,6 +62,8 @@ function createBoard(puzzle) {
     littleKillerMarker.appendChild(littleKillerMarkerPath);
     board.defs.appendChild(littleKillerMarker);
     
+    board.colors = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    board.appendChild(board.colors);
     board.thermos = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     board.appendChild(board.thermos);
     board.arrows = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -207,6 +209,7 @@ function cellPosition(x, y) {
 
 
 function redrawDigits() {
+    this.colors.replaceChildren();
     this.digits.replaceChildren();
     for (let digit of this.puzzle.digits) {
         drawDigit(this, ...digit);
@@ -216,6 +219,9 @@ function redrawDigits() {
     }
     for (let cornerMark of this.puzzle.cornerMarks) {
         drawCornerMark(this, ...cornerMark);
+    }
+    for (let color of this.puzzle.colors) {
+        drawColor(this, ...color);
     }
 }
 
@@ -888,5 +894,21 @@ function drawCornerMark(board, digits, column, row) {
         digitText.setAttribute('y', y);
         digitText.textContent = digit;
         board.digits.appendChild(digitText);
+    }
+}
+
+
+function drawColor(board, colors, column, row) {
+    for (let [i, color] of colors.entries()) {
+        let x = column * 100 - 100;
+        let y = row * 100 - 100;
+        
+        let colorFill = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        colorFill.setAttribute('x', x);
+        colorFill.setAttribute('y', y);
+        colorFill.setAttribute('width', 100);
+        colorFill.setAttribute('height', 100);
+        colorFill.setAttribute('fill', color);
+        board.colors.appendChild(colorFill);
     }
 }
