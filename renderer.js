@@ -62,6 +62,8 @@ function createBoard(puzzle) {
     littleKillerMarker.appendChild(littleKillerMarkerPath);
     board.defs.appendChild(littleKillerMarker);
     
+    board.extraRegions = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    board.appendChild(board.extraRegions);
     board.clones = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     board.appendChild(board.clones);
     board.colors = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -144,6 +146,9 @@ function createBoard(puzzle) {
     borderLines.setAttribute('d', `M0 0 L${gridSize} 0 L${gridSize} ${gridSize} L0 ${gridSize} Z`);
     board.grid.appendChild(borderLines);
     
+    for (let extraRegion of puzzle.extraRegions) {
+        drawExtraRegion(board, extraRegion);
+    }
     for (let clone of puzzle.clones) {
         drawClone(board, clone);
     }
@@ -416,6 +421,24 @@ function drawSelection(cells) {
     selection.appendChild(selectionLine);
     
     return selection;
+}
+
+
+function drawExtraRegion(board, cells) {
+    expandPadding(board, cells);
+    
+    let path = createOutline(board, cells, 5);
+    let extraRegionFill = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    extraRegionFill.setAttribute('class', 'extra-region');
+    extraRegionFill.setAttribute('d', path);
+    board.extraRegions.appendChild(extraRegionFill);
+    
+    let cagePath = createOutline(board, cells, 10);
+    let extraRegionCage = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    extraRegionCage.setAttribute('class', 'cage-line');
+    extraRegionCage.setAttribute('d', cagePath);
+    extraRegionCage.setAttribute('style', 'stroke:#7f7f7f');
+    board.cages.appendChild(extraRegionCage);
 }
 
 

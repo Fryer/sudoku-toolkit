@@ -45,8 +45,11 @@
     fill: none;
     stroke-width: 12.5;
 }
+.extra-region {
+    fill: #dfdfdf;
+}
 .clone {
-    fill: #cfcfcf;
+    fill: #bfbfbf7f;
 }
 .thermo-bulb {
     fill: #cfcfcf;

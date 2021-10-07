@@ -10,6 +10,7 @@ function loadFromFPuzzles(fpuzzles) {
         size: data.size,
         title: '',
         author: '',
+        extraRegions: [],
         clones: [],
         thermos: [],
         palindromes: [],
@@ -57,6 +58,15 @@ function loadFromFPuzzles(fpuzzles) {
                 });
             }
         }
+    }
+    
+    data.extraregion = data.extraregion !== undefined ? data.extraregion : [];
+    for (let extraregion of data.extraregion) {
+        let cells = [];
+        for (let rxcx of extraregion.cells) {
+            cells.push(rxcxToCell(rxcx));
+        }
+        puzzle.extraRegions.push(cells);
     }
     
     data.clone = data.clone !== undefined ? data.clone : [];
@@ -353,6 +363,9 @@ let puzzle = {};
 puzzle.size = 9;
 puzzle.title = '';
 puzzle.author = '';
+
+// Format: [[column, row], ...]
+puzzle.extraRegions = [];
 
 // Format: [cells: [[column, row], ...], ...]
 puzzle.clones = [];
