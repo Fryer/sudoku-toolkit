@@ -12,6 +12,7 @@ function loadFromFPuzzles(fpuzzles) {
         author: '',
         extraRegions: [],
         clones: [],
+        fortresses: [],
         thermos: [],
         palindromes: [],
         parity: [],
@@ -80,6 +81,18 @@ function loadFromFPuzzles(fpuzzles) {
             cells.push(rxcxToCell(rxcx));
         }
         puzzle.clones.push([cells, cloneCells]);
+    }
+    
+    data.minimum = data.minimum !== undefined ? data.minimum : [];
+    for (let minimum of data.minimum) {
+        let cell = rxcxToCell(minimum.cell);
+        puzzle.fortresses.push([true, cell[0], cell[1]]);
+    }
+    
+    data.maximum = data.maximum !== undefined ? data.maximum : [];
+    for (let maximum of data.maximum) {
+        let cell = rxcxToCell(maximum.cell);
+        puzzle.fortresses.push([false, cell[0], cell[1]]);
     }
     
     data.thermometer = data.thermometer !== undefined ? data.thermometer : [];
@@ -369,6 +382,9 @@ puzzle.extraRegions = [];
 
 // Format: [cells: [[column, row], ...], ...]
 puzzle.clones = [];
+
+// Format: [minimum?, column, row]
+puzzle.fortresses = [];
 
 // Format: [line: [[column, row], ...], ...]
 puzzle.thermos = [];

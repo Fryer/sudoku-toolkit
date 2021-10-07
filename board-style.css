@@ -51,6 +51,14 @@
 .clone {
     fill: #bfbfbf7f;
 }
+.fortress-square {
+    fill: #7f7f7f7f;
+}
+.fortress-arrow {
+    stroke: #202020;
+    fill: none;
+    stroke-width: 3.5;
+}
 .thermo-bulb {
     fill: #cfcfcf;
 }

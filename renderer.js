@@ -49,6 +49,12 @@ function createBoard(puzzle) {
     arrowMarker.appendChild(arrowMarkerPath);
     board.defs.appendChild(arrowMarker);
     
+    let fortressArrow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    fortressArrow.setAttribute('id', 'fortress-arrow');
+    fortressArrow.setAttribute('class', 'fortress-arrow');
+    fortressArrow.setAttribute('d', 'M-2.5 -10 L2.5 0 L-2.5 10');
+    board.defs.appendChild(fortressArrow);
+    
     let littleKillerMarker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
     littleKillerMarker.setAttribute('id', 'little-killer-cap');
     littleKillerMarker.setAttribute('markerWidth', 100);
@@ -66,6 +72,8 @@ function createBoard(puzzle) {
     board.appendChild(board.extraRegions);
     board.clones = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     board.appendChild(board.clones);
+    board.fortresses = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    board.appendChild(board.fortresses);
     board.colors = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     board.appendChild(board.colors);
     board.thermos = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -86,6 +94,8 @@ function createBoard(puzzle) {
     board.appendChild(board.kropki);
     board.xv = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     board.appendChild(board.xv);
+    board.fortressArrows = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    board.appendChild(board.fortressArrows);
     board.littleKillers = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     board.appendChild(board.littleKillers);
     board.sandwiches = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -151,6 +161,9 @@ function createBoard(puzzle) {
     }
     for (let clone of puzzle.clones) {
         drawClone(board, clone);
+    }
+    for (let fortress of puzzle.fortresses) {
+        drawFortress(board, ...fortress);
     }
     for (let thermo of puzzle.thermos) {
         drawThermo(board, thermo);
@@ -452,6 +465,52 @@ function drawClone(board, regions) {
         cloneRegion.setAttribute('d', path);
         board.clones.appendChild(cloneRegion);
     }
+}
+
+
+function drawFortress(board, minimum, column, row) {
+    expandPadding(board, [[column, row]]);
+    
+    let x = column * 100 - 50;
+    let y = row * 100 - 50;
+    
+    let fortressSquare = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    fortressSquare.setAttribute('class', 'fortress-square');
+    fortressSquare.setAttribute('x', x - 50);
+    fortressSquare.setAttribute('y', y - 50);
+    fortressSquare.setAttribute('width', 100);
+    fortressSquare.setAttribute('height', 100);
+    board.fortresses.appendChild(fortressSquare);
+    
+    let baseAngle = minimum ? 180 : 0;
+    
+    let fortressRightArrow = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    fortressRightArrow.setAttribute('href', '#fortress-arrow');
+    fortressRightArrow.setAttribute('x', x + 42.5);
+    fortressRightArrow.setAttribute('y', y);
+    fortressRightArrow.setAttribute('transform', `rotate(${baseAngle}, ${x + 42.5}, ${y})`);
+    board.fortressArrows.appendChild(fortressRightArrow);
+    
+    let fortressDownArrow = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    fortressDownArrow.setAttribute('href', '#fortress-arrow');
+    fortressDownArrow.setAttribute('x', x);
+    fortressDownArrow.setAttribute('y', y + 42.5);
+    fortressDownArrow.setAttribute('transform', `rotate(${baseAngle + 90}, ${x}, ${y + 42.5})`);
+    board.fortressArrows.appendChild(fortressDownArrow);
+    
+    let fortressLeftArrow = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    fortressLeftArrow.setAttribute('href', '#fortress-arrow');
+    fortressLeftArrow.setAttribute('x', x - 42.5);
+    fortressLeftArrow.setAttribute('y', y);
+    fortressLeftArrow.setAttribute('transform', `rotate(${baseAngle + 180}, ${x - 42.5}, ${y})`);
+    board.fortressArrows.appendChild(fortressLeftArrow);
+    
+    let fortressUpArrow = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    fortressUpArrow.setAttribute('href', '#fortress-arrow');
+    fortressUpArrow.setAttribute('x', x);
+    fortressUpArrow.setAttribute('y', y - 42.5);
+    fortressUpArrow.setAttribute('transform', `rotate(${baseAngle + 270}, ${x}, ${y - 42.5})`);
+    board.fortressArrows.appendChild(fortressUpArrow);
 }
 
 
