@@ -62,6 +62,8 @@ function createBoard(puzzle) {
     littleKillerMarker.appendChild(littleKillerMarkerPath);
     board.defs.appendChild(littleKillerMarker);
     
+    board.clones = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    board.appendChild(board.clones);
     board.colors = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     board.appendChild(board.colors);
     board.thermos = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -142,6 +144,9 @@ function createBoard(puzzle) {
     borderLines.setAttribute('d', `M0 0 L${gridSize} 0 L${gridSize} ${gridSize} L0 ${gridSize} Z`);
     board.grid.appendChild(borderLines);
     
+    for (let clone of puzzle.clones) {
+        drawClone(board, clone);
+    }
     for (let thermo of puzzle.thermos) {
         drawThermo(board, thermo);
     }
@@ -411,6 +416,19 @@ function drawSelection(cells) {
     selection.appendChild(selectionLine);
     
     return selection;
+}
+
+
+function drawClone(board, regions) {
+    expandPadding(board, regions.flat());
+    
+    for (let cells of regions) {
+        let path = createOutline(board, cells, 0);
+        let cloneRegion = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        cloneRegion.setAttribute('class', 'clone');
+        cloneRegion.setAttribute('d', path);
+        board.clones.appendChild(cloneRegion);
+    }
 }
 
 

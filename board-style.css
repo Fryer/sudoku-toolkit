@@ -45,6 +45,9 @@
     fill: none;
     stroke-width: 12.5;
 }
+.clone {
+    fill: #cfcfcf;
+}
 .thermo-bulb {
     fill: #cfcfcf;
 }

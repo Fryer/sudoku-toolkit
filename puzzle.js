@@ -10,6 +10,7 @@ function loadFromFPuzzles(fpuzzles) {
         size: data.size,
         title: '',
         author: '',
+        clones: [],
         thermos: [],
         palindromes: [],
         parity: [],
@@ -49,7 +50,7 @@ function loadFromFPuzzles(fpuzzles) {
             if (cell.c !== undefined) {
                 puzzle.extras.push({
                     type: 'polygon',
-                    before: 'thermos',
+                    before: 'colors',
                     path: [[column - 0.5, row - 0.5], [column + 0.5, row - 0.5], [column + 0.5, row + 0.5], [column - 0.5, row + 0.5]],
                     color: 'none',
                     fill: cell.c
@@ -58,14 +59,17 @@ function loadFromFPuzzles(fpuzzles) {
         }
     }
     
-    data.killercage = data.killercage !== undefined ? data.killercage : [];
-    for (let cage of data.killercage) {
+    data.clone = data.clone !== undefined ? data.clone : [];
+    for (let clone of data.clone) {
         let cells = [];
-        for (let rxcx of cage.cells) {
+        for (let rxcx of clone.cells) {
             cells.push(rxcxToCell(rxcx));
         }
-        let sum = cage.value !== undefined ? cage.value : '';
-        puzzle.cages.push([sum, cells]);
+        let cloneCells = [];
+        for (let rxcx of clone.cloneCells) {
+            cells.push(rxcxToCell(rxcx));
+        }
+        puzzle.clones.push([cells, cloneCells]);
     }
     
     data.thermometer = data.thermometer !== undefined ? data.thermometer : [];
@@ -120,6 +124,16 @@ function loadFromFPuzzles(fpuzzles) {
     for (let odd of data.odd) {
         let cell = rxcxToCell(odd.cell);
         puzzle.parity.push([false, cell[0], cell[1]]);
+    }
+    
+    data.killercage = data.killercage !== undefined ? data.killercage : [];
+    for (let cage of data.killercage) {
+        let cells = [];
+        for (let rxcx of cage.cells) {
+            cells.push(rxcxToCell(rxcx));
+        }
+        let sum = cage.value !== undefined ? cage.value : '';
+        puzzle.cages.push([sum, cells]);
     }
     
     data.cage = data.cage !== undefined ? data.cage : [];
@@ -339,6 +353,9 @@ let puzzle = {};
 puzzle.size = 9;
 puzzle.title = '';
 puzzle.author = '';
+
+// Format: [cells: [[column, row], ...], ...]
+puzzle.clones = [];
 
 // Format: [line: [[column, row], ...], ...]
 puzzle.thermos = [];
