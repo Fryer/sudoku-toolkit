@@ -84,6 +84,8 @@ function createBoard(puzzle) {
     board.appendChild(board.xv);
     board.littleKillers = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     board.appendChild(board.littleKillers);
+    board.sandwiches = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    board.appendChild(board.sandwiches);
     board.givens = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     board.appendChild(board.givens);
     board.digits = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -166,6 +168,9 @@ function createBoard(puzzle) {
     }
     for (let littleKiller of puzzle.littleKillers) {
         drawLittleKiller(board, ...littleKiller);
+    }
+    for (let sandwich of puzzle.sandwiches) {
+        drawSandwich(board, ...sandwich);
     }
     
     for (let extra of puzzle.extras) {
@@ -757,6 +762,21 @@ function drawLittleKiller(board, sum, column, row, right, down) {
     littleKillerSum.setAttribute('y', y);
     littleKillerSum.textContent = sum;
     board.littleKillers.appendChild(littleKillerSum);
+}
+
+
+function drawSandwich(board, sum, column, row) {
+    expandPadding(board, [[column, row]]);
+    
+    let x = column * 100 - 50;
+    let y = row * 100 - 50;
+    
+    let sandwichSum = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    sandwichSum.setAttribute('class', 'sandwich');
+    sandwichSum.setAttribute('x', x);
+    sandwichSum.setAttribute('y', y);
+    sandwichSum.textContent = sum;
+    board.sandwiches.appendChild(sandwichSum);
 }
 
 

@@ -20,6 +20,7 @@ function loadFromFPuzzles(fpuzzles) {
         kropki: [],
         xv: [],
         littleKillers: [],
+        sandwiches: [],
         extras: [],
         givens: [],
         digits: [],
@@ -199,6 +200,12 @@ function loadFromFPuzzles(fpuzzles) {
         puzzle.littleKillers.push([littlekillersum.value, cell[0], cell[1], right, down]);
     }
     
+    data.sandwichsum = data.sandwichsum !== undefined ? data.sandwichsum : [];
+    for (let sandwichsum of data.sandwichsum) {
+        let cell = rxcxToCell(sandwichsum.cell);
+        puzzle.sandwiches.push([sandwichsum.value, cell[0], cell[1]]);
+    }
+    
     data.line = data.line !== undefined ? data.line : [];
     for (let line of data.line) {
         for (let part of line.lines) {
@@ -362,6 +369,9 @@ puzzle.xv = [];
 
 // Format: [sum, column, row, right?, down?]
 puzzle.littleKillers = [];
+
+// Format: [sum, column, row]
+puzzle.sandwiches = [];
 
 // Format:
 //   {
