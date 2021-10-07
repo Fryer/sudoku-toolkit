@@ -80,6 +80,8 @@ function createBoard(puzzle) {
     board.appendChild(board.thermos);
     board.palindromes = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     board.appendChild(board.palindromes);
+    board.betweenLines = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    board.appendChild(board.betweenLines);
     board.arrows = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     board.appendChild(board.arrows);
     board.parity = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -170,6 +172,10 @@ function createBoard(puzzle) {
     }
     for (let palindrome of puzzle.palindromes) {
         drawPalindrome(board, palindrome);
+    }
+    board.betweenLines.bulbs = new Set();
+    for (let betweenLine of puzzle.betweenLines) {
+        drawBetweenLine(board, betweenLine);
     }
     for (let arrow of puzzle.arrows) {
         drawArrow(board, ...arrow);
@@ -558,6 +564,59 @@ function drawPalindrome(board, cells) {
     palindromeLine.setAttribute('class', 'palindrome');
     palindromeLine.setAttribute('d', path);
     board.palindromes.appendChild(palindromeLine);
+}
+
+
+function drawBetweenLine(board, cells) {
+    expandPadding(board, cells);
+    
+    let x = cells[0][0] * 100 - 50;
+    let y = cells[0][1] * 100 - 50;
+    let dx = cells[1][0] * 100 - 50 - x;
+    let dy = cells[1][1] * 100 - 50 - y;
+    let dm = Math.sqrt(dx * dx + dy * dy);
+    x += 43.25 * dx / dm;
+    y += 43.25 * dy / dm;
+    let path = `M${x} ${y}`;
+    for (let i = 1; i < cells.length; i++) {
+        let x = cells[i][0] * 100 - 50;
+        let y = cells[i][1] * 100 - 50;
+        if (i == cells.length - 1) {
+            let dx = cells[i - 1][0] * 100 - 50 - x;
+            let dy = cells[i - 1][1] * 100 - 50 - y;
+            let dm = Math.sqrt(dx * dx + dy * dy);
+            x += 43.25 * dx / dm;
+            y += 43.25 * dy / dm;
+        }
+        path += ` L${x} ${y}`;
+    }
+    
+    let betweenLineLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    betweenLineLine.setAttribute('class', 'between-line-line');
+    betweenLineLine.setAttribute('d', path);
+    board.betweenLines.appendChild(betweenLineLine);
+    
+    let bulbIndex = board.puzzle.cellIndex(...cells[0]);
+    if (!board.betweenLines.bulbs.has(bulbIndex)) {
+        let betweenLineBlub = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        betweenLineBlub.setAttribute('class', 'between-line-bulb');
+        betweenLineBlub.setAttribute('cx', cells[0][0] * 100 - 50);
+        betweenLineBlub.setAttribute('cy', cells[0][1] * 100 - 50);
+        betweenLineBlub.setAttribute('r', 43.25);
+        board.betweenLines.appendChild(betweenLineBlub);
+        board.betweenLines.bulbs.add(bulbIndex);
+    }
+    
+    bulbIndex = board.puzzle.cellIndex(...cells[cells.length - 1]);
+    if (!board.betweenLines.bulbs.has(bulbIndex)) {
+        let betweenLineBlub = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        betweenLineBlub.setAttribute('class', 'between-line-bulb');
+        betweenLineBlub.setAttribute('cx', cells[cells.length - 1][0] * 100 - 50);
+        betweenLineBlub.setAttribute('cy', cells[cells.length - 1][1] * 100 - 50);
+        betweenLineBlub.setAttribute('r', 43.25);
+        board.betweenLines.appendChild(betweenLineBlub);
+        board.betweenLines.bulbs.add(bulbIndex);
+    }
 }
 
 

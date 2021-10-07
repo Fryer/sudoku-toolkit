@@ -16,6 +16,7 @@ function loadFromFPuzzles(fpuzzles) {
         thermos: [],
         palindromes: [],
         parity: [],
+        betweenLines: [],
         arrows: [],
         cages: [],
         diagonals: [false, false],
@@ -117,6 +118,18 @@ function loadFromFPuzzles(fpuzzles) {
                 line.push(rxcxToCell(rxcx));
             }
             puzzle.palindromes.push(line);
+        }
+    }
+    
+    data.betweenline = data.betweenline !== undefined ? data.betweenline : [];
+    for (let betweenline of data.betweenline) {
+        let lines = [];
+        for (let part of betweenline.lines) {
+            let line = [];
+            for (let rxcx of part) {
+                line.push(rxcxToCell(rxcx));
+            }
+            puzzle.betweenLines.push(line);
         }
     }
     
@@ -391,6 +404,9 @@ puzzle.thermos = [];
 
 // Format: [[column, row], ...]
 puzzle.palindromes = [];
+
+// Format: [[column, row], ...]
+puzzle.betweenLines = [];
 
 // Format: [cells: [[column, row], ...], [line: [[column, row], ...], ...]]
 puzzle.arrows = [];

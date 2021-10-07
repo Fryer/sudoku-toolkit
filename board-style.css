@@ -76,14 +76,14 @@
     stroke-linejoin: round;
     stroke-linecap: round;
 }
-.arrow-bulb, .arrow-line, .arrow-cap {
+.between-line-bulb, .between-line-line, .arrow-bulb, .arrow-line, .arrow-cap {
     stroke: #7f7f7f;
     stroke-width: 3.5;
 }
-.arrow-bulb {
+.between-line-bulb, .arrow-bulb {
     fill: #ffffff7f;
 }
-.arrow-line {
+.between-line-line, .arrow-line {
     fill: none;
     stroke-linejoin: round;
 }
