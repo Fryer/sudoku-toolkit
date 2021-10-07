@@ -55,6 +55,13 @@
     stroke-linejoin: round;
     stroke-linecap: round;
 }
+.palindrome {
+    stroke: #afafaf;
+    fill: none;
+	stroke-width: 25;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
 .arrow-bulb, .arrow-line, .arrow-cap {
     stroke: #7f7f7f;
     stroke-width: 3.5;

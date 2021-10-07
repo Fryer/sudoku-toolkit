@@ -66,6 +66,8 @@ function createBoard(puzzle) {
     board.appendChild(board.colors);
     board.thermos = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     board.appendChild(board.thermos);
+    board.palindromes = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    board.appendChild(board.palindromes);
     board.arrows = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     board.appendChild(board.arrows);
     board.parity = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -140,6 +142,9 @@ function createBoard(puzzle) {
     
     for (let thermo of puzzle.thermos) {
         drawThermo(board, thermo);
+    }
+    for (let palindrome of puzzle.palindromes) {
+        drawPalindrome(board, palindrome);
     }
     for (let arrow of puzzle.arrows) {
         drawArrow(board, ...arrow);
@@ -429,6 +434,25 @@ function drawThermo(board, lines) {
     thermoBulb.setAttribute('cy', lines[0][0][1] * 100 - 50);
     thermoBulb.setAttribute('r', 40);
     board.thermos.appendChild(thermoBulb);
+}
+
+
+function drawPalindrome(board, cells) {
+    expandPadding(board, cells);
+    
+    let x = cells[0][0] * 100 - 50;
+    let y = cells[0][1] * 100 - 50;
+    let path = `M${x} ${y}`;
+    for (let i = 1; i < cells.length; i++) {
+        let x = cells[i][0] * 100 - 50;
+        let y = cells[i][1] * 100 - 50;
+        path += ` L${x} ${y}`;
+    }
+    
+    let palindromeLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    palindromeLine.setAttribute('class', 'palindrome');
+    palindromeLine.setAttribute('d', path);
+    board.palindromes.appendChild(palindromeLine);
 }
 
 

@@ -11,6 +11,7 @@ function loadFromFPuzzles(fpuzzles) {
         title: '',
         author: '',
         thermos: [],
+        palindromes: [],
         parity: [],
         arrows: [],
         cages: [],
@@ -77,6 +78,18 @@ function loadFromFPuzzles(fpuzzles) {
             lines.push(line);
         }
         puzzle.thermos.push(lines);
+    }
+    
+    data.palindrome = data.palindrome !== undefined ? data.palindrome : [];
+    for (let palindrome of data.palindrome) {
+        let lines = [];
+        for (let part of palindrome.lines) {
+            let line = [];
+            for (let rxcx of part) {
+                line.push(rxcxToCell(rxcx));
+            }
+            puzzle.palindromes.push(line);
+        }
     }
     
     data.arrow = data.arrow !== undefined ? data.arrow : [];
@@ -322,6 +335,9 @@ puzzle.author = '';
 
 // Format: [line: [[column, row], ...], ...]
 puzzle.thermos = [];
+
+// Format: [[column, row], ...]
+puzzle.palindromes = [];
 
 // Format: [cells: [[column, row], ...], [line: [[column, row], ...], ...]]
 puzzle.arrows = [];
