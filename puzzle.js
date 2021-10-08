@@ -10,6 +10,7 @@ function loadFromFPuzzles(fpuzzles) {
         size: data.size,
         title: '',
         author: '',
+        regions: [],
         extraRegions: [],
         clones: [],
         fortresses: [],
@@ -44,6 +45,8 @@ function loadFromFPuzzles(fpuzzles) {
         return [match[2] | 0, match[1] | 0];
     }
     
+    let cellRegions = {};
+    
     for (let row = 1; row <= data.size; row++) {
         for (let column = 1; column <= data.size; column++) {
             let cell = data.grid[row - 1][column - 1];
@@ -58,6 +61,57 @@ function loadFromFPuzzles(fpuzzles) {
                     color: 'none',
                     fill: cell.c
                 });
+            }
+            if (cell.region !== undefined) {
+                cellRegions[puzzle.cellIndex(column, row)] = cell.region;
+            }
+        }
+    }
+    
+    if (Object.keys(cellRegions).length > 0) {
+        puzzle.regions = (new Array(data.size)).fill(0).map(() => []);
+        for (let row = 1; row <= data.size; row++) {
+            for (let column = 1; column <= data.size; column++) {
+                let region = cellRegions[puzzle.cellIndex(column, row)];
+                if (region !== undefined) {
+                    puzzle.regions[region].push([column, row]);
+                    continue;
+                }
+                let column0 = column - 1;
+                let row0 = row - 1;
+                switch (data.size) {
+                    case 4:
+                        region = Math.floor(row0 / 2) * 2 + Math.floor(column0 % 4 / 2);
+                        break;
+                    case 6:
+                        region = Math.floor(row0 / 2) * 2 + Math.floor(column0 % 6 / 3);
+                        break;
+                    case 8:
+                        region = Math.floor(row0 / 2) * 2 + Math.floor(column0 % 8 / 4);
+                        break;
+                    case 9:
+                        region = Math.floor(row0 / 3) * 3 + Math.floor(column0 % 9 / 3);
+                        break;
+                    case 10:
+                        region = Math.floor(row0 / 2) * 2 + Math.floor(column0 % 10 / 5);
+                        break;
+                    case 12:
+                        region = Math.floor(row0 / 3) * 3 + Math.floor(column0 % 12 / 4);
+                        break;
+                    case 14:
+                        region = Math.floor(row0 / 2) * 2 + Math.floor(column0 % 14 / 7);
+                        break;
+                    case 15:
+                        region = Math.floor(row0 / 3) * 3 + Math.floor(column0 % 15 / 5);
+                        break;
+                    case 16:
+                        region = Math.floor(row0 / 4) * 4 + Math.floor(column0 % 16 / 4);
+                        break;
+                    default:
+                        region = row0;
+                        break;
+                }
+                puzzle.regions[region].push([column, row]);
             }
         }
     }
@@ -389,6 +443,9 @@ let puzzle = {};
 puzzle.size = 9;
 puzzle.title = '';
 puzzle.author = '';
+
+// Format: [[column, row], ...]
+puzzle.regions = [];
 
 // Format: [[column, row], ...]
 puzzle.extraRegions = [];

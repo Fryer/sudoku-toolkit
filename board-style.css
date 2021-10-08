@@ -7,19 +7,20 @@
     fill: none;
 }
 .border-line {
-	stroke-width: 3.5;
+    stroke-width: 3.5;
     stroke-linejoin: bevel;
 }
 .box-line {
-	stroke-width: 3.5;
+    stroke-width: 3.5;
+    stroke-linejoin: bevel;
 }
 .cell-line {
-	stroke: #606060;
-	stroke-width: 1.5;
+    stroke: #606060;
+    stroke-width: 1.5;
 }
 .diagonal-line {
-	stroke: #609f609f;
-	stroke-width: 2.5;
+    stroke: #609f609f;
+    stroke-width: 2.5;
 }
 .given, .digit {
     font-size: 70px;
@@ -65,14 +66,14 @@
 .thermo-line {
     stroke: #cfcfcf;
     fill: none;
-	stroke-width: 30;
+    stroke-width: 30;
     stroke-linejoin: round;
     stroke-linecap: round;
 }
 .palindrome {
     stroke: #afafaf;
     fill: none;
-	stroke-width: 25;
+    stroke-width: 25;
     stroke-linejoin: round;
     stroke-linecap: round;
 }
@@ -118,7 +119,7 @@
 .cage-line {
     stroke: #202020;
     fill: none;
-	stroke-width: 2;
+    stroke-width: 2;
     stroke-linejoin: round;
     stroke-dasharray: 6 4;
     stroke-dashoffset: 3;
@@ -165,7 +166,7 @@
 .little-killer-arrow {
     stroke: #202020;
     fill: none;
-	stroke-width: 3.5;
+    stroke-width: 3.5;
 }
 .little-killer-sum, .sandwich {
     fill: #303030;
