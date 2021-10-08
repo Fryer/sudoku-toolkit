@@ -56,7 +56,7 @@ function loadFromFPuzzles(fpuzzles) {
             if (cell.c !== undefined) {
                 puzzle.extras.push({
                     type: 'polygon',
-                    before: 'colors',
+                    before: 'extraRegions',
                     path: [[column - 0.5, row - 0.5], [column + 0.5, row - 0.5], [column + 0.5, row + 0.5], [column - 0.5, row + 0.5]],
                     color: 'none',
                     fill: cell.c
