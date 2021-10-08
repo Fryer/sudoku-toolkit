@@ -10,6 +10,7 @@ function loadFromFPuzzles(fpuzzles) {
         size: data.size,
         title: '',
         author: '',
+        rules: [],
         regions: [],
         extraRegions: [],
         clones: [],
@@ -39,6 +40,7 @@ function loadFromFPuzzles(fpuzzles) {
     
     puzzle.title = data.title ? data.title : 'Sudoku';
     puzzle.author = data.author ? data.author : '';
+    puzzle.rules = data.ruleset ? data.ruleset.split('\n') : [];
     
     function rxcxToCell(rxcx) {
         let match = rxcx.match(/R([0-9]+)C([0-9]+)/);
@@ -443,6 +445,7 @@ let puzzle = {};
 puzzle.size = 9;
 puzzle.title = '';
 puzzle.author = '';
+puzzle.rules = [];
 
 // Format: [[column, row], ...]
 puzzle.regions = [];

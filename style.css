@@ -166,3 +166,32 @@ button:active {
 .pause-blur {
     filter: blur(calc(50 * var(--grid-unit))) grayscale(100%);
 }
+#rules-panel {
+    display: none;
+    min-height: 0;
+}
+.rules-title {
+    font-family: Lato, sans-serif;
+    font-size: calc(24 * var(--grid-unit));
+    font-weight: bold;
+    color: #303030;
+    margin: 0 calc(15 * var(--grid-unit));
+}
+.rules {
+    font-family: Lato, sans-serif;
+    font-size: calc(18 * var(--grid-unit));
+    color: #303030;
+    background: #f4f8f4;
+    box-sizing: border-box;
+    border: calc(3 * var(--grid-unit)) solid #607fbf;
+    border-radius: calc(3 * var(--grid-unit));
+    width: calc(400 * var(--grid-unit));
+    min-height: 0;
+    overflow-y: auto;
+    padding: 0 calc(5 * var(--grid-unit));
+    margin: 0 calc(5 * var(--grid-unit));
+}
+.rules p {
+    line-height: 1.1;
+    margin: calc(5 * var(--grid-unit)) 0;
+}

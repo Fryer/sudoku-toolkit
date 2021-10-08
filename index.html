@@ -41,6 +41,16 @@ window.addEventListener('load', () => {
     if (puzzle.author) {
         author.textContent = 'by ' + puzzle.author;
     }
+    if (puzzle.rules.length > 0) {
+        let rulesPanel = document.getElementById('rules-panel');
+        rulesPanel.style.display = 'flex';
+        let rules = rulesPanel.querySelector('.rules');
+        for (let rule of puzzle.rules) {
+            let ruleParagraph = document.createElement('p');
+            ruleParagraph.textContent = rule;
+            rules.appendChild(ruleParagraph);
+        }
+    }
 });
 </script>
 </head>
@@ -62,6 +72,10 @@ window.addEventListener('load', () => {
 <input class="timer-time" disabled value="0:00">
 <button class="reset-button">&#11119;&#65038;</button>
 </div>
+</div>
+<div class="panel" id="rules-panel">
+<div class="rules-title">Rules:</div>
+<div class="rules"></div>
 </div>
 <div class="panel" id="input-panel">
 <div class="panel-row">
