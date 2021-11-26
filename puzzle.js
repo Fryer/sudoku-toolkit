@@ -65,7 +65,7 @@ function loadFromFPuzzles(fpuzzles) {
                 });
             }
             if (cell.region !== undefined) {
-                cellRegions[puzzle.cellIndex(column, row)] = cell.region;
+                cellRegions[puzzle.cellIndex(column, row)] = cell.region ? cell.region : 0;
             }
         }
     }
