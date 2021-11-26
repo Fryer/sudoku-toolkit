@@ -608,7 +608,7 @@ function pushUndo(board) {
     board.undoHistory[board.undoIndex] = {
         inputState: copyInputState(board.inputState),
         selectedCells: new Set(board.selectedCells),
-        cursor: (board.cursor ? [board.cursor.row, board.cursor.column] : undefined)
+        cursor: (board.cursor ? [board.cursor.column, board.cursor.row] : undefined)
     };
     board.undoHistory.splice(board.undoIndex + 1);
 }
@@ -627,8 +627,8 @@ function undo(board) {
         delete board.cursor;
     }
     
-    board.selectedCells = new Set(board.undoHistory[board.undoIndex].selectedCells);
-    let cursor = board.undoHistory[board.undoIndex].cursor;
+    board.selectedCells = new Set(board.undoHistory[board.undoIndex + 1].selectedCells);
+    let cursor = board.undoHistory[board.undoIndex + 1].cursor;
     if (cursor === undefined) {
         deselectAll(board);
     }
