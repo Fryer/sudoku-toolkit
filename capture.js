@@ -19,12 +19,7 @@ function initCapture(board, panel) {
             
             let ctx = canvas.getContext('2d');
             ctx.fillStyle = '#ffffff';
-            ctx.fillRect(
-                board.padding[0],
-                board.padding[1],
-                board.size[0] - board.padding[0] - board.padding[2],
-                board.size[1] - board.padding[1] - board.padding[3]
-            );
+            ctx.fillRect(0, 0, board.size[0], board.size[1]);
             ctx.drawImage(captureImage, 0, 0);
             captureTab.location = canvas.toDataURL();
             
