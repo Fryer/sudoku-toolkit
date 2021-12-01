@@ -1196,15 +1196,28 @@ function drawCornerMark(board, digits, column, row) {
 
 
 function drawColor(board, colors, column, row) {
+    let colorSpacing = 100 / colors.length;
     for (let [i, color] of colors.entries()) {
         let x = column * 100 - 100;
         let y = row * 100 - 100;
+        let path = '';
+        if (i == 0) {
+            path += `M${x} ${y + 100} L${x} ${y}`;
+        }
+        else {
+            let xL = x + i * colorSpacing;
+            path += `M${xL - 10} ${y + 100} L${xL + 10} ${y}`;
+        }
+        if (i == colors.length - 1) {
+            path += ` L${x + 100} ${y} L${x + 100} ${y + 100}`;
+        }
+        else {
+            let xR = x + (i + 1) * colorSpacing;
+            path += ` L${xR + 10} ${y} L${xR - 10} ${y + 100}`;
+        }
         
-        let colorFill = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        colorFill.setAttribute('x', x);
-        colorFill.setAttribute('y', y);
-        colorFill.setAttribute('width', 100);
-        colorFill.setAttribute('height', 100);
+        let colorFill = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        colorFill.setAttribute('d', path);
         colorFill.setAttribute('fill', color);
         board.colors.appendChild(colorFill);
     }
