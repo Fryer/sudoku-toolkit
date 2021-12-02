@@ -570,12 +570,12 @@ function updateDigits(board) {
         '#ff20207f',
         '#ff8f207f',
         '#ffdf207f',
-        '#8fff207f',
-        '#20df207f',
-        '#20dfff7f',
-        '#2060ff7f',
-        '#df20ff7f',
-        '#4040407f'
+        '#20bf207f',
+        '#20dfdf7f',
+        '#207fff7f',
+        '#8f40ff7f',
+        '#7f7f7f7f',
+        '#2020207f'
     ];
     board.puzzle.colors = [];
     for (let column = 1; column <= board.puzzle.size; column++) {
