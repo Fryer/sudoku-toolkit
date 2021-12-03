@@ -1,6 +1,12 @@
 export { startInput };
 
 
+const DIGIT_MODE = 0;
+const CORNER_MODE = 1;
+const CENTER_MODE = 2;
+const COLOR_MODE = 3;
+
+
 function startInput(board, panel) {
     board.resetInput = reset;
     
@@ -9,6 +15,7 @@ function startInput(board, panel) {
     window.addEventListener('mouseup', (event) => mouseUp(event, board));
     window.addEventListener('mousemove', (event) => mouseMove(event, board));
     window.addEventListener('keydown', (event) => keyDown(event, board));
+    window.addEventListener('keyup', (event) => keyUp(event, board));
     
     board.inputState = [];
     for (let i = 0; i < board.puzzle.size ** 2; i++) {
@@ -42,7 +49,7 @@ function startInput(board, panel) {
     pushUndo(board);
     
     panel.addEventListener('mousedown', event => event.stopPropagation());
-    for (let button of panel.querySelectorAll('.digit-button')) {
+    for (let button of panel.querySelectorAll('.digit-button, .center-button, .corner-button, .color-button')) {
         let digit = button.textContent;
         button.addEventListener('click', event => clickDigit(event, board, digit));
     }
@@ -52,6 +59,30 @@ function startInput(board, panel) {
     redoButton.addEventListener('click', event => clickRedo(event, board));
     let deleteButton = panel.querySelector('.delete-button');
     deleteButton.addEventListener('click', event => clickDelete(event, board));
+    
+    board.inputMode = DIGIT_MODE;
+    board.modifiedInputMode = DIGIT_MODE;
+    board.inputModes = [
+        {
+            button: panel.querySelector('.digit-mode-button'),
+            panel: panel.querySelector('.digit-panel')
+        },
+        {
+            button: panel.querySelector('.corner-mode-button'),
+            panel: panel.querySelector('.corner-panel')
+        },
+        {
+            button: panel.querySelector('.center-mode-button'),
+            panel: panel.querySelector('.center-panel')
+        },
+        {
+            button: panel.querySelector('.color-mode-button'),
+            panel: panel.querySelector('.color-panel')
+        },
+    ];
+    for (let [i, mode] of board.inputModes.entries()) {
+        mode.button.addEventListener('click', event => clickMode(event, board, i));
+    }
 }
 
 
@@ -111,6 +142,24 @@ function clickDelete(event, board) {
         repeat: false
     });
     keyDown(keyEvent, board);
+}
+
+
+function clickMode(event, board, mode) {
+    switch (mode) {
+        case DIGIT_MODE:
+            keyDown(new KeyboardEvent('keydown', { key: 'z' }), board);
+            break;
+        case CORNER_MODE:
+            keyDown(new KeyboardEvent('keydown', { key: 'x' }), board);
+            break;
+        case CENTER_MODE:
+            keyDown(new KeyboardEvent('keydown', { key: 'c' }), board);
+            break;
+        case COLOR_MODE:
+            keyDown(new KeyboardEvent('keydown', { key: 'v' }), board);
+            break;
+    }
 }
 
 
@@ -238,19 +287,31 @@ function keyDown(event, board) {
     }
     
     let digitMatch = event.code.match(/^Digit(?<digit>[1-9])$/);
-    let undoMatch = event.key.match(/^z$/i);
-    let redoMatch = event.key.match(/^y$/i);
+    digitMatch = (!event.altKey && !event.metaKey) ? digitMatch : false;
+    let undoMatch = event.key.match(/^z$/);
+    undoMatch = (event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey) ? undoMatch : false;
+    let redoMatch = event.key.match(/^y$/);
+    redoMatch = (event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey) ? redoMatch : false;
     let deleteMatch = event.key.match(/^(Backspace|Delete)$/);
+    deleteMatch = (!event.altKey && !event.metaKey) ? deleteMatch : false;
+    let modeMatch = event.key.match(/^[zxcv]$/);
+    modeMatch = (!event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey) ? modeMatch : false;
+    let modeModifierMatch = event.key.match(/^(Control|Shift)$/);
     let arrowMatch = event.key.match(/^(Arrow(?<arrow>Left|Up|Right|Down))$/);
+    arrowMatch = (!event.metaKey) ? arrowMatch : false;
+    let selectAllMatch = event.key == 'a' && event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey;
+    let deselectMatch = event.key == 'd' && event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey;
+    deselectMatch ||= event.key == 'Escape' && !event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey;
     let isInput = false;
-    isInput ||= digitMatch && !event.altKey && !event.metaKey;
-    isInput ||= undoMatch && event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey;
-    isInput ||= redoMatch && event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey;
-    isInput ||= deleteMatch && !event.altKey && !event.metaKey;
-    isInput ||= arrowMatch && !event.metaKey;
-    isInput ||= event.key == 'a' && event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey;
-    isInput ||= event.key == 'd' && event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey;
-    isInput ||= event.key == 'Escape' && !event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey;
+    isInput ||= digitMatch;
+    isInput ||= undoMatch;
+    isInput ||= redoMatch;
+    isInput ||= deleteMatch;
+    isInput ||= modeMatch;
+    isInput ||= modeModifierMatch;
+    isInput ||= arrowMatch;
+    isInput ||= selectAllMatch;
+    isInput ||= deselectMatch;
     if (!isInput) {
         return;
     }
@@ -262,7 +323,7 @@ function keyDown(event, board) {
     
     if (digitMatch) {
         let digit = digitMatch.groups.digit;
-        if (board.selectedCells.size != 0 && event.ctrlKey && event.shiftKey) {
+        if (board.selectedCells.size != 0 && board.modifiedInputMode == COLOR_MODE) {
             let hasColor = true;
             for (let i of board.selectedCells) {
                 if (!board.inputState[i].color.has(digit)) {
@@ -293,7 +354,7 @@ function keyDown(event, board) {
         if (selectedCells.size == 0) {
             return;
         }
-        if (event.ctrlKey) {
+        if (board.modifiedInputMode == CENTER_MODE) {
             let hasMark = true;
             for (let i of selectedCells) {
                 if (!board.inputState[i].center.has(digit)) {
@@ -312,7 +373,7 @@ function keyDown(event, board) {
                 }
             }
         }
-        else if (event.shiftKey) {
+        else if (board.modifiedInputMode == CORNER_MODE) {
             let hasMark = true;
             for (let i of selectedCells) {
                 if (!board.inputState[i].corner.has(digit)) {
@@ -359,19 +420,19 @@ function keyDown(event, board) {
         let deleteCenter = true;
         let deleteCorner = true;
         let deleteColor = true;
-        if (event.ctrlKey && event.shiftKey) {
+        if (board.modifiedInputMode == COLOR_MODE) {
             deleteDigit = false;
             deleteCenter = false;
             deleteCorner = false;
             deleteColor = true;
         }
-        else if (event.ctrlKey) {
+        else if (board.modifiedInputMode == CENTER_MODE) {
             deleteDigit = false;
             deleteCenter = true;
             deleteCorner = false;
             deleteColor = false;
         }
-        else if (event.shiftKey) {
+        else if (board.modifiedInputMode == CORNER_MODE) {
             deleteDigit = false;
             deleteCenter = false;
             deleteCorner = true;
@@ -409,6 +470,53 @@ function keyDown(event, board) {
         }
         updateDigits(board);
         pushUndo(board);
+        return;
+    }
+    
+    if (modeMatch) {
+        switch (modeMatch[0]) {
+            case 'z':
+                board.inputMode = DIGIT_MODE;
+                board.modifiedInputMode = DIGIT_MODE;
+                break;
+            case 'x':
+                board.inputMode = CORNER_MODE;
+                board.modifiedInputMode = CORNER_MODE;
+                break;
+            case 'c':
+                board.inputMode = CENTER_MODE;
+                board.modifiedInputMode = CENTER_MODE;
+                break;
+            case 'v':
+                board.inputMode = COLOR_MODE;
+                board.modifiedInputMode = COLOR_MODE;
+                break;
+        }
+        for (let mode of board.inputModes) {
+            mode.button.classList.add('toggle-off');
+            mode.panel.style.display = 'none';
+        }
+        board.inputModes[board.inputMode].button.classList.remove('toggle-off');
+        board.inputModes[board.inputMode].panel.style.display = '';
+        return;
+    }
+    
+    if (modeModifierMatch) {
+        if (event.ctrlKey && event.shiftKey) {
+            board.modifiedInputMode = COLOR_MODE;
+        }
+        else if (event.ctrlKey) {
+            board.modifiedInputMode = CENTER_MODE;
+        }
+        else {
+            board.modifiedInputMode = CORNER_MODE;
+        }
+        for (let mode of board.inputModes) {
+            mode.button.classList.add('toggle-off');
+            mode.panel.style.display = 'none';
+        }
+        board.inputModes[board.modifiedInputMode].button.classList.remove('toggle-off');
+        board.inputModes[board.modifiedInputMode].panel.style.display = '';
         return;
     }
     
@@ -458,19 +566,43 @@ function keyDown(event, board) {
         return;
     }
     
-    if (event.key == 'a' && event.ctrlKey && !event.shiftKey && !event.altKey) {
+    if (selectAllMatch) {
         for (let i = 0; i < board.inputState.length; i++) {
             board.selectedCells.add(i);
         }
         selectCell(board, 1, 1);
     }
     
-    if (event.key == 'd' && event.ctrlKey && !event.shiftKey && !event.altKey) {
+    if (deselectMatch) {
         deselectAll(board);
     }
-    if (event.key == 'Escape' && !event.ctrlKey && !event.shiftKey && !event.altKey) {
-        deselectAll(board);
+}
+
+function keyUp(event, board) {
+    if (board.paused && !board.stopped) {
+        return;
     }
+    
+    if (!event.key.match(/^(Control|Shift)$/)) {
+        return;
+    }
+    event.preventDefault();
+    
+    if (event.ctrlKey) {
+        board.modifiedInputMode = CENTER_MODE;
+    }
+    else if (event.shiftKey) {
+        board.modifiedInputMode = CORNER_MODE;
+    }
+    else {
+        board.modifiedInputMode = board.inputMode;
+    }
+    for (let mode of board.inputModes) {
+        mode.button.classList.add('toggle-off');
+        mode.panel.style.display = 'none';
+    }
+    board.inputModes[board.modifiedInputMode].button.classList.remove('toggle-off');
+    board.inputModes[board.modifiedInputMode].panel.style.display = '';
 }
 
 

@@ -63,6 +63,11 @@ body {
 }
 .panel-row {
     display: flex;
+    flex-direction: row;
+}
+.panel-column {
+    display: flex;
+    flex-direction: column;
 }
 button {
     font-family: Lato, sans-serif;
@@ -80,11 +85,68 @@ button:active {
     color: #dfdfdf;
     background: #5070af;
 }
-.digit-button {
-    font-size: calc(60 * var(--grid-unit));
+button.toggle-off {
+    color: #304060;
+    background: #bfcfdf;
+}
+button.toggle-off:active {
+    color: #203050;
+    background: #9fafbf;
+}
+.digit-button, .corner-button, .center-button, .color-button {
     width: calc(90 * var(--grid-unit));
     height: calc(90 * var(--grid-unit));
     padding: 0;
+}
+.digit-button {
+    font-size: calc(60 * var(--grid-unit));
+}
+.corner-button {
+    font-size: calc(30 * var(--grid-unit));
+}
+.center-button {
+    font-size: calc(30 * var(--grid-unit));
+}
+.corner-button div {
+    margin: calc(-30 * var(--grid-unit)) 0 0 calc(-40 * var(--grid-unit));
+}
+.color-button div {
+    display: inline-block;
+    color: #00000000;
+    border: calc(2 * var(--grid-unit)) solid #304060;
+    border-radius: calc(4 * var(--grid-unit));
+    width: calc(60 * var(--grid-unit));
+    height: calc(60 * var(--grid-unit));
+}
+.color-button:active div {
+    border-color: #203050;
+}
+.color-square-1 {
+    background: #ff8f8f;
+}
+.color-square-2 {
+    background: #ffc78f;
+}
+.color-square-3 {
+    background: #ffef8f;
+}
+.color-square-4 {
+    background: #8fdf8f;
+}
+.color-square-5 {
+    background: #8fefef;
+}
+.color-square-6 {
+    background: #8fbfff;
+}
+.color-square-7 {
+    background: #c79fff;
+}
+.color-square-8 {
+    background: #bfbfbf;
+}
+.color-square-9 {
+    background: #8f8f8f;
 }
 .undo-button, .redo-button {
     font-size: calc(80 * var(--grid-unit));
@@ -103,6 +165,43 @@ button:active {
     width: calc(90 * var(--grid-unit));
     height: calc(90 * var(--grid-unit));
     padding: 0;
+}
+.digit-mode-button, .corner-mode-button, .center-mode-button, .color-mode-button {
+    width: calc(90 * var(--grid-unit));
+    height: calc(90 * var(--grid-unit));
+    padding: 0;
+    margin-left: calc(15 * var(--grid-unit));
+}
+:is(.digit-mode-button, .corner-mode-button, .center-mode-button, .color-mode-button) div {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    border: calc(4 * var(--grid-unit)) solid #ffffff;
+    border-radius: calc(4 * var(--grid-unit));
+    width: calc(60 * var(--grid-unit));
+    height: calc(60 * var(--grid-unit));
+}
+:is(.digit-mode-button, .corner-mode-button, .center-mode-button, .color-mode-button):active div {
+    border-color: #dfdfdf;
+}
+:is(.digit-mode-button, .corner-mode-button, .center-mode-button, .color-mode-button).toggle-off div {
+    border-color: #304060;
+}
+:is(.digit-mode-button, .corner-mode-button, .center-mode-button, .color-mode-button).toggle-off:active div {
+    border-color: #203050;
+}
+.digit-mode-button {
+    font-size: calc(50 * var(--grid-unit));
+}
+.corner-mode-button, .center-mode-button {
+    font-size: calc(25 * var(--grid-unit));
+}
+.corner-mode-button {
+    line-height: calc(30 * var(--grid-unit));
+    word-spacing: calc(10 * var(--grid-unit));
+}
+.color-mode-button {
+    font-size: calc(40 * var(--grid-unit));
 }
 .pause-button, .play-button {
     font-size: calc(30 * var(--grid-unit));

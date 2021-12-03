@@ -77,7 +77,9 @@ window.addEventListener('load', () => {
 <div class="rules-title">Rules:</div>
 <div class="rules"></div>
 </div>
-<div class="panel" id="input-panel">
+<div class="panel panel-row" id="input-panel">
+<div class="panel-column">
+<div class="panel-column digit-panel">
 <div class="panel-row">
 <button class="digit-button">1</button>
 <button class="digit-button">2</button>
@@ -93,10 +95,69 @@ window.addEventListener('load', () => {
 <button class="digit-button">8</button>
 <button class="digit-button">9</button>
 </div>
+</div>
+<div class="panel-column corner-panel" style="display:none">
+<div class="panel-row">
+<button class="corner-button"><div>1</div></button>
+<button class="corner-button"><div>2</div></button>
+<button class="corner-button"><div>3</div></button>
+</div>
+<div class="panel-row">
+<button class="corner-button"><div>4</div></button>
+<button class="corner-button"><div>5</div></button>
+<button class="corner-button"><div>6</div></button>
+</div>
+<div class="panel-row">
+<button class="corner-button"><div>7</div></button>
+<button class="corner-button"><div>8</div></button>
+<button class="corner-button"><div>9</div></button>
+</div>
+</div>
+<div class="panel-column center-panel" style="display:none">
+<div class="panel-row">
+<button class="center-button">1</button>
+<button class="center-button">2</button>
+<button class="center-button">3</button>
+</div>
+<div class="panel-row">
+<button class="center-button">4</button>
+<button class="center-button">5</button>
+<button class="center-button">6</button>
+</div>
+<div class="panel-row">
+<button class="center-button">7</button>
+<button class="center-button">8</button>
+<button class="center-button">9</button>
+</div>
+</div>
+<div class="panel-column color-panel" style="display:none">
+<div class="panel-row">
+<button class="color-button"><div class="color-square-1">1</div></button>
+<button class="color-button"><div class="color-square-2">2</div></button>
+<button class="color-button"><div class="color-square-3">3</div></button>
+</div>
+<div class="panel-row">
+<button class="color-button"><div class="color-square-4">4</div></button>
+<button class="color-button"><div class="color-square-5">5</div></button>
+<button class="color-button"><div class="color-square-6">6</div></button>
+</div>
+<div class="panel-row">
+<button class="color-button"><div class="color-square-7">7</div></button>
+<button class="color-button"><div class="color-square-8">8</div></button>
+<button class="color-button"><div class="color-square-9">9</div></button>
+</div>
+</div>
 <div class="panel-row">
 <button class="undo-button"><div>&#10554;&#65038;</div></button>
 <button class="redo-button"><div>&#10554;&#65038;</div></button>
 <button class="delete-button">&#10006;&#65038;</button>
+</div>
+</div>
+<div class="panel-column">
+<button class="digit-mode-button"><div>5</div></button>
+<button class="corner-mode-button toggle-off"><div>1 2<br>3 4</div></button>
+<button class="center-mode-button toggle-off"><div>123</div></button>
+<button class="color-mode-button toggle-off"><div>&#127752;</div></button>
 </div>
 </div>
 <div class="panel" id="actions-panel">
