@@ -79,6 +79,7 @@ button {
     width: max-content;
     margin: calc(5 * var(--grid-unit));
     padding: calc(10 * var(--grid-unit)) calc(20 * var(--grid-unit));
+    overflow: hidden;
     cursor: pointer;
 }
 button:active {
