@@ -8,6 +8,14 @@ body {
     margin: 0;
     overflow: hidden;
 }
+@media (max-aspect-ratio: 13/9) {
+    :root {
+        --grid-unit: calc(calc(95vw) * 9 / 13 / 900);
+    }
+    body {
+        height: calc(calc(100vw) * 9 / 13);
+    }
+}
 .content, .sidebar {
     display: flex;
     flex-direction: column;
