@@ -4,11 +4,16 @@
     --grid-unit: min(var(--dvh) * 95 / 900, var(--dvw) * 95 * 9 / 13 / 900);
 }
 body {
-    display: flex;
-    justify-content: center;
-    height: min(var(--dvh) * 100, var(--dvw) * 100 * 9 / 13);
+    width: calc(var(--dvw) * 100);
+    height: calc(var(--dvh) * 100);
     margin: 0;
     overflow: hidden;
+}
+.page {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: min(var(--dvh) * 100, var(--dvw) * 100 * 9 / 13);
 }
 .content, .sidebar {
     display: flex;

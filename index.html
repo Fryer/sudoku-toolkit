@@ -12,14 +12,14 @@ let dvwDelta = 0;
 let dvhDelta = 0;
 
 function updateViewportUnits() {
-    let newDvwDelta = (document.documentElement.clientWidth - window.innerWidth) / 100;
-    if (newDvwDelta != dvwDelta) {
-        dvwDelta = newDvwDelta;
+    let dvwDelta2 = (document.body.clientWidth - window.innerWidth) / 100;
+    if (dvwDelta2 != 0) {
+        dvwDelta += dvwDelta2;
         document.documentElement.style.setProperty('--dvw', `calc(1vw - ${dvwDelta}px)`);
     }
-    let newDvhDelta = (document.documentElement.clientHeight - window.innerHeight) / 100;
-    if (newDvhDelta != dvhDelta) {
-        dvhDelta = newDvhDelta;
+    let dvhDelta2 = (document.body.clientHeight - window.innerHeight) / 100;
+    if (dvhDelta2 != 0) {
+        dvhDelta += dvhDelta2;
         document.documentElement.style.setProperty('--dvh', `calc(1vh - ${dvhDelta}px)`);
     }
 }
@@ -77,6 +77,7 @@ window.addEventListener('load', () => {
 </script>
 </head>
 <body>
+<div class="page">
 <div class="content">
 <div class="header">
 <div id="title"></div>
@@ -186,6 +187,7 @@ window.addEventListener('load', () => {
 <div class="panel-row">
 <button class="check-button">Check</button>
 <button class="capture-button">Screenshot</button>
+</div>
 </div>
 </div>
 </div>
