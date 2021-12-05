@@ -1,20 +1,14 @@
 :root {
-    --grid-unit: calc(calc(95vh) / 900);
+    --dvw: 1vw;
+    --dvh: 1vh;
+    --grid-unit: min(var(--dvh) * 95 / 900, var(--dvw) * 95 * 9 / 13 / 900);
 }
 body {
     display: flex;
     justify-content: center;
-    height: 100vh;
+    height: min(var(--dvh) * 100, var(--dvw) * 100 * 9 / 13);
     margin: 0;
     overflow: hidden;
-}
-@media (max-aspect-ratio: 13/9) {
-    :root {
-        --grid-unit: calc(calc(95vw) * 9 / 13 / 900);
-    }
-    body {
-        height: calc(calc(100vw) * 9 / 13);
-    }
 }
 .content, .sidebar {
     display: flex;

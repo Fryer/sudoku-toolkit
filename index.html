@@ -7,6 +7,28 @@
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
 <link href="style.css" rel="stylesheet">
 <link id="board-style" href="board-style.css" rel="stylesheet">
+<script type="module">
+let dvwDelta = 0;
+let dvhDelta = 0;
+
+function updateViewportUnits() {
+    let newDvwDelta = (document.documentElement.clientWidth - window.innerWidth) / 100;
+    if (newDvwDelta != dvwDelta) {
+        dvwDelta = newDvwDelta;
+        document.documentElement.style.setProperty('--dvw', `calc(1vw - ${dvwDelta}px)`);
+    }
+    let newDvhDelta = (document.documentElement.clientHeight - window.innerHeight) / 100;
+    if (newDvhDelta != dvhDelta) {
+        dvhDelta = newDvhDelta;
+        document.documentElement.style.setProperty('--dvh', `calc(1vh - ${dvhDelta}px)`);
+    }
+}
+
+window.addEventListener('load', () => {
+    updateViewportUnits();
+    window.addEventListener('resize', updateViewportUnits);
+});
+</script>
 <script src="lz-string.min.js"></script>
 <script type="module">
 import { loadFromFPuzzles } from './puzzle.js';
