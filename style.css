@@ -262,20 +262,27 @@ button.toggle-off:active {
     background: #ffffff;
     border: calc(3 * var(--grid-unit)) solid #607fbf;
     box-sizing: border-box;
-    width: calc(300 * var(--grid-unit));
+    width: calc(230 * var(--grid-unit));
     height: calc(50 * var(--grid-unit));
     margin: calc(5 * var(--grid-unit)) 0;
     padding: 0 calc(15 * var(--grid-unit));
     cursor: text;
 }
-.reset-button {
+.check-button {
     font-size: calc(30 * var(--grid-unit));
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     width: calc(50 * var(--grid-unit));
     height: calc(50 * var(--grid-unit));
-    padding: 0 calc(3 * var(--grid-unit)) 0 0;
+    padding: 0 calc(3 * var(--grid-unit)) calc(1 * var(--grid-unit)) 0;
     margin-left: 0;
+}
+.reset-button {
+    font-size: calc(30 * var(--grid-unit));
+    width: calc(50 * var(--grid-unit));
+    height: calc(50 * var(--grid-unit));
+    padding: 0;
+    margin-left: calc(15 * var(--grid-unit));
 }
 #pause-overlay {
     height: 0;

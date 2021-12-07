@@ -50,11 +50,12 @@ window.addEventListener('load', () => {
     document.getElementById('board-container').appendChild(board);
     
     startInput(board, document.getElementById('input-panel'));
-    startTimer(board, document.getElementById('timer-panel'), document.getElementById('pause-overlay'));
     
-    let actionsPanel = document.getElementById('actions-panel');
-    let checkButton = actionsPanel.querySelector('.check-button');
+    let timerPanel = document.getElementById('timer-panel')
+    startTimer(board, timerPanel, document.getElementById('pause-overlay'));
+    let checkButton = timerPanel.querySelector('.check-button');
     checkButton.addEventListener('click', () => check(board));
+    
     initCapture(board, document.getElementById('actions-panel'));
     
     let title = document.getElementById('title');
@@ -94,6 +95,7 @@ window.addEventListener('load', () => {
 <div class="panel-row">
 <button class="pause-button">&#9208;&#65038;</button>
 <input class="timer-time" disabled value="0:00">
+<button class="check-button">&#10004;&#65038;</button>
 <button class="reset-button">&#11119;&#65038;</button>
 </div>
 </div>
@@ -187,7 +189,6 @@ window.addEventListener('load', () => {
 </div>
 <div class="panel" id="actions-panel">
 <div class="panel-row">
-<button class="check-button">Check</button>
 <button class="capture-button">Screenshot</button>
 </div>
 </div>
