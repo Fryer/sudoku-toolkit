@@ -6,12 +6,16 @@
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
 <link href="style.css" rel="stylesheet">
+<link id="portrait-style" href="portrait-style.css" rel="stylesheet" media="not all">
 <link id="board-style" href="board-style.css" rel="stylesheet">
 <script type="module">
 let dvwDelta = 0;
 let dvhDelta = 0;
 
-function updateViewportUnits() {
+function updateViewport() {
+    let portraitStyle = document.getElementById('portrait-style');
+    portraitStyle.media = (window.innerWidth > window.innerHeight) ? 'not all' : 'all';
+    
     let dvwDelta2 = (document.body.clientWidth - window.innerWidth) / 100;
     if (dvwDelta2 != 0) {
         dvwDelta += dvwDelta2;
@@ -25,8 +29,8 @@ function updateViewportUnits() {
 }
 
 window.addEventListener('load', () => {
-    updateViewportUnits();
-    window.addEventListener('resize', updateViewportUnits);
+    updateViewport();
+    window.addEventListener('resize', updateViewport);
 });
 </script>
 <script src="lz-string.min.js"></script>

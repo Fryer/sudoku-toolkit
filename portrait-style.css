@@ -1,0 +1,25 @@
+:root {
+    --grid-unit: min(var(--dvw) / 9, var(--dvh) * 13 / 20 / 9);
+}
+.page {
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    height: min(var(--dvh) * 100, var(--dvw) * 100 * 20 / 13);
+    width: 100%;
+}
+.sidebar {
+    flex-direction: row;
+    justify-content: start;
+    margin-top: calc(20 * var(--grid-unit));
+    min-height: 0;
+}
+.panel {
+    margin: calc(10 * var(--grid-unit));
+}
+.rules {
+    margin-bottom: calc(10 * var(--grid-unit));
+}
+#actions-panel {
+    display: none;
+}
