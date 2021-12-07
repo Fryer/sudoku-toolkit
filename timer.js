@@ -8,7 +8,7 @@ function startTimer(board, panel, pauseOverlay) {
     board.timeField = panel.querySelector('.timer-time');
     board.resetButton = panel.querySelector('.reset-button');
     
-    panel.addEventListener('mousedown', event => event.stopPropagation());
+    panel.addEventListener('pointerdown', event => event.stopPropagation());
     board.pauseButton.addEventListener('click', () => clickPause(board));
     board.resetButton.addEventListener('click', () => clickReset(board));
     pauseOverlay.addEventListener('click', () => clickPause(board));

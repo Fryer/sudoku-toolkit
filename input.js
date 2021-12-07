@@ -10,10 +10,10 @@ const COLOR_MODE = 3;
 function startInput(board, panel) {
     board.resetInput = reset;
     
-    board.addEventListener('mousedown', (event) => mouseDown(event, board, true));
-    window.addEventListener('mousedown', (event) => mouseDown(event, board, false));
-    window.addEventListener('mouseup', (event) => mouseUp(event, board));
-    window.addEventListener('mousemove', (event) => mouseMove(event, board));
+    board.addEventListener('pointerdown', (event) => mouseDown(event, board, true));
+    window.addEventListener('pointerdown', (event) => mouseDown(event, board, false));
+    window.addEventListener('pointerup', (event) => mouseUp(event, board));
+    window.addEventListener('pointermove', (event) => mouseMove(event, board));
     window.addEventListener('keydown', (event) => keyDown(event, board));
     window.addEventListener('keyup', (event) => keyUp(event, board));
     
@@ -48,7 +48,7 @@ function startInput(board, panel) {
     board.undoIndex = -1;
     pushUndo(board);
     
-    panel.addEventListener('mousedown', event => event.stopPropagation());
+    panel.addEventListener('pointerdown', event => event.stopPropagation());
     for (let button of panel.querySelectorAll('.digit-button, .center-button, .corner-button, .color-button')) {
         let digit = button.textContent;
         button.addEventListener('click', event => clickDigit(event, board, digit));

@@ -2,7 +2,7 @@ export { initCapture };
 
 
 function initCapture(board, panel) {
-    panel.addEventListener('mousedown', event => event.stopPropagation());
+    panel.addEventListener('pointerdown', event => event.stopPropagation());
     
     let captureButton = panel.querySelector('.capture-button');
     captureButton.addEventListener('click', () => {
