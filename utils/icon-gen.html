@@ -1,0 +1,265 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>SVG Icon Generator</title>
+<style>
+div {
+  width: 100px;
+  height: 100px;
+  background: #607fbf;
+  border-radius: 10px;
+}
+.icon {
+    stroke: #ffffff;
+    fill: #ffffff;
+    width: 100%;
+    height: 100%;
+}
+</style>
+</head>
+<body>
+
+<div id="undo">
+<svg class="icon" viewBox="0 0 100 100">
+<path d="" stroke-width="6px" fill="none"></path>
+<path d="" stroke="none"></path>
+</svg>
+</div>
+<pre id="undo-src"></pre>
+<script type="module">
+let div = document.getElementById('undo');
+let width = 50;
+let angle = Math.PI / 1.5;
+let strokeWidth = 6;
+let arrowSize = 18;
+let xOff = 0.275;
+let yOff = 0;
+let arrowXOff = -0.75;
+let arrowYOff = 0;
+let sinA2 = Math.sin(angle / 2);
+let cosA2 = Math.cos(angle / 2);
+let radius = width / 2 / sinA2;
+let height = radius * (1 - cosA2);
+height -= strokeWidth * (1 - cosA2) / 2;
+let cx = 50 + xOff;
+let cy = 50 + yOff + radius - height / 2;
+let x1 = cx + radius * sinA2;
+let y1 = cy - radius * cosA2;
+let x2 = cx - radius * sinA2;
+let y2 = cy - radius * cosA2;
+let curvePath = `M${x1} ${y1} A${radius} ${radius} 0 0 0 ${x2} ${y2}`;
+div.querySelectorAll('path')[0].setAttribute('d', curvePath);
+let ax = x2 + arrowXOff - strokeWidth * sinA2 / 2;
+let ay = y2 + arrowYOff + strokeWidth * cosA2 / 2;
+let arrowPath = `M${ax} ${ay} V${ay - arrowSize} L${ax + arrowSize} ${ay} Z`;
+div.querySelectorAll('path')[1].setAttribute('d', arrowPath);
+document.getElementById('undo-src').textContent = div.innerHTML;
+</script>
+
+<div id="redo">
+<svg class="icon" viewBox="0 0 100 100">
+<path d="" stroke-width="6px" fill="none"></path>
+<path d="" stroke="none"></path>
+</svg>
+</div>
+<pre id="redo-src"></pre>
+<script type="module">
+let div = document.getElementById('redo');
+let width = 50;
+let angle = Math.PI / 1.5;
+let strokeWidth = 6;
+let arrowSize = 18;
+let xOff = -0.275;
+let yOff = 0;
+let arrowXOff = 0.75;
+let arrowYOff = 0;
+let sinA2 = Math.sin(angle / 2);
+let cosA2 = Math.cos(angle / 2);
+let radius = width / 2 / sinA2;
+let height = radius * (1 - cosA2);
+height -= strokeWidth * (1 - cosA2) / 2;
+let cx = 50 + xOff;
+let cy = 50 + yOff + radius - height / 2;
+let x1 = cx - radius * sinA2;
+let y1 = cy - radius * cosA2;
+let x2 = cx + radius * sinA2;
+let y2 = cy - radius * cosA2;
+let curvePath = `M${x1} ${y1} A${radius} ${radius} 0 0 1 ${x2} ${y2}`;
+div.querySelectorAll('path')[0].setAttribute('d', curvePath);
+let ax = x2 + arrowXOff + strokeWidth * sinA2 / 2;
+let ay = y2 + arrowYOff + strokeWidth * cosA2 / 2;
+let arrowPath = `M${ax} ${ay} V${ay - arrowSize} L${ax - arrowSize} ${ay} Z`;
+div.querySelectorAll('path')[1].setAttribute('d', arrowPath);
+document.getElementById('redo-src').textContent = div.innerHTML;
+</script>
+
+<div id="reset">
+<svg class="icon" viewBox="0 0 100 100">
+<path d="" stroke-width="6px" fill="none"></path>
+<path d="" stroke="none"></path>
+</svg>
+</div>
+<pre id="reset-src"></pre>
+<script type="module">
+let div = document.getElementById('reset');
+let width = 45;
+let angle = Math.PI / 2;
+let strokeWidth = 6;
+let arrowSize = 18;
+let xOff = 0;
+let yOff = 2;
+let arrowXOff = -5;
+let arrowYOff = -3.5;
+let sinA2 = Math.sin(angle / 2);
+let cosA2 = Math.cos(angle / 2);
+let radius = width / 2;
+let cx = 50 + xOff;
+let cy = 50 + yOff;
+let x1 = cx - radius * sinA2;
+let y1 = cy - radius * cosA2;
+let x2 = cx + radius * sinA2;
+let y2 = cy - radius * cosA2;
+let curvePath = `M${x1} ${y1} A${radius} ${radius} 0 1 0 ${x2} ${y2}`;
+div.querySelectorAll('path')[0].setAttribute('d', curvePath);
+let ax = x2 + arrowXOff - strokeWidth * sinA2 / 2;
+let ay = y2 + arrowYOff - strokeWidth * cosA2 / 2;
+let arrowPath = `M${ax} ${ay} V${ay + arrowSize} L${ax + arrowSize} ${ay} Z`;
+div.querySelectorAll('path')[1].setAttribute('d', arrowPath);
+document.getElementById('reset-src').textContent = div.innerHTML;
+</script>
+
+<div id="play">
+<svg class="icon play-icon" viewBox="0 0 100 100">
+<path d="" stroke="none"></path>
+</svg>
+</div>
+<pre id="play-src"></pre>
+<script type="module">
+let div = document.getElementById('play');
+let height = 40;
+let xOff = 5;
+let yOff = 3;
+let width = height * Math.cos(Math.PI / 6);
+let x = 50 + xOff - width / 2;
+let y = 50 + yOff + height / 2;
+let path = `M${x} ${y} V${y - height} L${x + width} ${y - height / 2} Z`;
+div.querySelector('path').setAttribute('d', path);
+document.getElementById('play-src').textContent = div.innerHTML;
+</script>
+
+<div id="pause">
+<svg class="icon pause-icon" viewBox="0 0 100 100">
+<path d="" stroke-width="10px" fill="none"></path>
+</svg>
+</div>
+<pre id="pause-src"></pre>
+<script type="module">
+let div = document.getElementById('pause');
+let height = 40;
+let strokeWidth = 10;
+let xOff = 2;
+let yOff = 3;
+let x1 = 50 + xOff - strokeWidth;
+let x2 = 50 + xOff + strokeWidth;
+let y = 50 + yOff - height / 2;
+let path = `M${x1} ${y} V${y + height} M${x2} ${y} V${y + height}`;
+div.querySelector('path').setAttribute('d', path);
+document.getElementById('pause-src').textContent = div.innerHTML;
+</script>
+
+<div id="delete">
+<svg class="icon" viewBox="0 0 100 100">
+<path d="" stroke-width="8px" fill="none"></path>
+</svg>
+</div>
+<pre id="delete-src"></pre>
+<script type="module">
+let div = document.getElementById('delete');
+let size = 35;
+let strokeWidth = 8;
+let xOff = 0;
+let yOff = 0;
+let l = 50 + xOff - size / 2;
+let t = 50 + yOff - size / 2;
+let r = 50 + xOff + size / 2;
+let b = 50 + yOff + size / 2;
+let path = `M${l} ${t} L${r} ${b} M${r} ${t} L${l} ${b}`;
+div.querySelector('path').setAttribute('d', path);
+document.getElementById('delete-src').textContent = div.innerHTML;
+</script>
+
+<div id="check">
+<svg class="icon" viewBox="0 0 100 100">
+<path d="" stroke-width="8px" stroke-linejoin="bevel" fill="none"></path>
+</svg>
+</div>
+<pre id="check-src"></pre>
+<script type="module">
+let div = document.getElementById('check');
+let width = 40;
+let lHeight = 23;
+let rHeight = 45;
+let lSkew = 2;
+let strokeWidth = 8;
+let xOff = 0;
+let yOff = 4;
+let lWidth = width * lHeight / (lHeight + rHeight) + lSkew;
+let rWidth = width * rHeight / (lHeight + rHeight) - lSkew;
+let x1 = 50 + xOff - width / 2;
+let y1 = 50 + yOff + rHeight / 2 - lHeight;
+let x2 = x1 + lWidth;
+let y2 = 50 + yOff + rHeight / 2;
+let x3 = x2 + rWidth;
+let y3 = 50 + yOff - rHeight / 2;
+let path = `M${x1} ${y1} L${x2} ${y2} L${x3} ${y3}`;
+div.querySelector('path').setAttribute('d', path);
+document.getElementById('check-src').textContent = div.innerHTML;
+</script>
+
+<div id="color">
+<svg class="icon" viewBox="0 0 100 100">
+</svg>
+</div>
+<pre id="color-src"></pre>
+<script type="module">
+let div = document.getElementById('color');
+let svg = div.querySelector('svg');
+let colors = [
+    '#ff6b6b',
+    '#ffb56b',
+    '#ffe86b',
+    '#6edd6e',
+    '#6aeded',
+    '#6babff',
+    '#b17aff'
+];
+let colorSpacing = 100 / colors.length;
+for (let [i, color] of colors.entries()) {
+    let path = '';
+    if (i == 0) {
+        path += 'M0 100 L0 0';
+    }
+    else {
+        let xL = i * colorSpacing;
+        path += `M${xL - 10} 100 L${xL + 10} 0`;
+    }
+    if (i == colors.length - 1) {
+        path += ' L100 0 L100 100';
+    }
+    else {
+        let xR = (i + 1) * colorSpacing + 1;
+        path += ` L${xR + 10} 0 L${xR - 10} 100`;
+    }
+    let colorFill = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    colorFill.setAttribute('d', path);
+    colorFill.setAttribute('stroke', 'none');
+    colorFill.setAttribute('fill', color);
+    svg.appendChild(colorFill);
+}
+div.innerHTML = div.innerHTML.replaceAll('</path>', '</path>\n');
+document.getElementById('color-src').textContent = div.innerHTML;
+</script>
+
+</body>
+</html>

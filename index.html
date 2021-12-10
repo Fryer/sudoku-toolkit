@@ -97,10 +97,26 @@ window.addEventListener('load', () => {
 <div class="panel-column" style="min-height: 0">
 <div class="panel" id="timer-panel">
 <div class="panel-row">
-<button class="pause-button">&#9208;&#65038;</button>
+<button class="pause-button">
+<svg class="icon pause-icon" viewBox="0 0 100 100">
+<path d="M42 33 V73 M62 33 V73" stroke-width="10px" fill="none"></path>
+</svg>
+<svg class="icon play-icon" viewBox="0 0 100 100">
+<path d="M37.67949192431122 73 V33 L72.32050807568876 53 Z" stroke="none"></path>
+</svg>
+</button>
 <input class="timer-time" disabled value="0:00">
-<button class="check-button">&#10004;&#65038;</button>
-<button class="reset-button">&#11119;&#65038;</button>
+<button class="check-button">
+<svg class="icon" viewBox="0 0 100 100">
+<path d="M30 53.5 L45.529411764705884 76.5 L70 31.5" stroke-width="8px" stroke-linejoin="bevel" fill="none"></path>
+</svg>
+</button>
+<button class="reset-button">
+<svg class="icon" viewBox="0 0 100 100">
+<path d="M34.09009742330268 36.09009742330268 A22.5 22.5 0 1 0 65.90990257669732 36.09009742330268" stroke-width="6px" fill="none"></path>
+<path d="M58.788582233137674 30.468777079743038 V48.468777079743035 L76.78858223313767 30.468777079743038 Z" stroke="none"></path>
+</svg>
+</button>
 </div>
 </div>
 <div class="panel" id="rules-panel">
@@ -179,16 +195,40 @@ window.addEventListener('load', () => {
 </div>
 </div>
 <div class="panel-row">
-<button class="undo-button"><div>&#10554;&#65038;</div></button>
-<button class="redo-button"><div>&#10554;&#65038;</div></button>
-<button class="delete-button">&#10006;&#65038;</button>
+<button class="undo-button">
+<svg class="icon" viewBox="0 0 100 100">
+<path d="M75.275 57.96687836487031 A28.86751345948129 28.86751345948129 0 0 0 25.275 57.96687836487031" stroke-width="6px" fill="none"></path>
+<path d="M21.926923788646683 59.46687836487031 V41.46687836487031 L39.92692378864668 59.46687836487031 Z" stroke="none"></path>
+</svg>
+</button>
+<button class="redo-button">
+<svg class="icon" viewBox="0 0 100 100">
+<path d="M24.725 57.96687836487031 A28.86751345948129 28.86751345948129 0 0 1 74.725 57.96687836487031" stroke-width="6px" fill="none"></path>
+<path d="M78.07307621135331 59.46687836487031 V41.46687836487031 L60.07307621135331 59.46687836487031 Z" stroke="none"></path>
+</svg>
+</button>
+<button class="delete-button">
+<svg class="icon" viewBox="0 0 100 100">
+<path d="M32.5 32.5 L67.5 67.5 M67.5 32.5 L32.5 67.5" stroke-width="8px" fill="none"></path>
+</svg>
+</button>
 </div>
 </div>
 <div class="panel-column">
 <button class="digit-mode-button"><div>5</div></button>
 <button class="corner-mode-button toggle-off"><div>1 2<br>3 4</div></button>
 <button class="center-mode-button toggle-off"><div>123</div></button>
-<button class="color-mode-button toggle-off"><div>&#127752;</div></button>
+<button class="color-mode-button toggle-off"><div>
+<svg class="icon" viewBox="0 0 100 100">
+<path d="M0 100 L0 0 L25.285714285714285 0 L5.2857142857142865 100" stroke="none" fill="#ff6b6b"></path>
+<path d="M4.2857142857142865 100 L24.285714285714285 0 L39.57142857142857 0 L19.571428571428573 100" stroke="none" fill="#ffb56b"></path>
+<path d="M18.571428571428573 100 L38.57142857142857 0 L53.85714285714286 0 L33.85714285714286 100" stroke="none" fill="#ffe86b"></path>
+<path d="M32.85714285714286 100 L52.85714285714286 0 L68.14285714285714 0 L48.142857142857146 100" stroke="none" fill="#6edd6e"></path>
+<path d="M47.142857142857146 100 L67.14285714285714 0 L82.42857142857143 0 L62.42857142857143 100" stroke="none" fill="#6aeded"></path>
+<path d="M61.42857142857143 100 L81.42857142857143 0 L96.71428571428572 0 L76.71428571428572 100" stroke="none" fill="#6babff"></path>
+<path d="M75.71428571428572 100 L95.71428571428572 0 L100 0 L100 100" stroke="none" fill="#b17aff"></path>
+</svg>
+</div></button>
 </div>
 </div>
 <div class="panel" id="actions-panel">

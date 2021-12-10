@@ -105,6 +105,12 @@ button.toggle-off:active {
     color: #203050;
     background: #9fafbf;
 }
+.icon {
+    stroke: #ffffff;
+    fill: #ffffff;
+    width: 100%;
+    height: 100%;
+}
 .digit-button, .corner-button, .center-button, .color-button {
     width: calc(90 * var(--grid-unit));
     height: calc(90 * var(--grid-unit));
@@ -161,7 +167,6 @@ button.toggle-off:active {
     background: #8f8f8f;
 }
 .undo-button, .redo-button {
-    font-size: calc(80 * var(--grid-unit));
     width: calc(90 * var(--grid-unit));
     height: calc(90 * var(--grid-unit));
     padding: 0;
@@ -169,11 +174,7 @@ button.toggle-off:active {
 .undo-button div, .redo-button div {
     margin-top: calc(-20 * var(--grid-unit));
 }
-.redo-button {
-    transform: scale(-1, 1);
-}
 .delete-button {
-    font-size: calc(50 * var(--grid-unit));
     width: calc(90 * var(--grid-unit));
     height: calc(90 * var(--grid-unit));
     padding: 0;
@@ -212,23 +213,24 @@ button.toggle-off:active {
     line-height: calc(30 * var(--grid-unit));
     word-spacing: calc(10 * var(--grid-unit));
 }
-.color-mode-button {
-    font-size: calc(40 * var(--grid-unit));
+.color-mode-button div {
+    vertical-align: bottom;
 }
 .pause-button, .play-button {
-    font-size: calc(30 * var(--grid-unit));
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
     width: calc(50 * var(--grid-unit));
     height: calc(50 * var(--grid-unit));
     margin-right: 0;
 }
-.pause-button {
-    padding: 0 0 calc(5 * var(--grid-unit)) calc(4 * var(--grid-unit));
+.pause-button, .play-button {
+    padding: 0;
 }
-.play-button {
-    font-size: calc(25 * var(--grid-unit));
-    padding: 0 0 calc(1 * var(--grid-unit)) calc(6 * var(--grid-unit));
+.pause-button .play-icon {
+    display: none;
+}
+.play-button .pause-icon {
+    display: none;
 }
 .timer-time {
     font-family: Lato, sans-serif;
@@ -245,7 +247,6 @@ button.toggle-off:active {
     cursor: text;
 }
 .check-button {
-    font-size: calc(30 * var(--grid-unit));
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     width: calc(50 * var(--grid-unit));
@@ -254,7 +255,6 @@ button.toggle-off:active {
     margin-left: 0;
 }
 .reset-button {
-    font-size: calc(30 * var(--grid-unit));
     width: calc(50 * var(--grid-unit));
     height: calc(50 * var(--grid-unit));
     padding: 0;

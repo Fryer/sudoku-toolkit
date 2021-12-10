@@ -33,7 +33,6 @@ function stopTimer() {
     this.stopped = true;
     cancelAnimationFrame(this.timerFrameRequest);
     
-    this.pauseButton.textContent = '\u25b6\ufe0e';
     this.pauseButton.className = 'play-button';
 }
 
@@ -63,7 +62,6 @@ function pause(board) {
     board.paused = true;
     cancelAnimationFrame(board.timerFrameRequest);
     
-    board.pauseButton.textContent = '\u25b6\ufe0e';
     board.pauseButton.className = 'play-button';
     
     board.pauseOverlay.style.display = 'unset';
@@ -77,7 +75,6 @@ function unpause(board) {
     board.lastTimeUpdate = performance.now();
     updateLoop(board);
     
-    board.pauseButton.textContent = '\u23f8\ufe0e';
     board.pauseButton.className = 'pause-button';
     
     board.pauseOverlay.style.display = '';
