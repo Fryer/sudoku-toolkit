@@ -6,7 +6,6 @@
     justify-content: start;
     align-items: center;
     height: min(var(--dvh) * 100, var(--dvw) * 100 * 20 / 13);
-    width: 100%;
 }
 .sidebar {
     flex-direction: row;
