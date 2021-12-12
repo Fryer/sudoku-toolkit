@@ -1133,7 +1133,6 @@ function drawCenterMark(board, digits, column, row) {
     digitText.textContent = digits.join('');
     board.digits.appendChild(digitText);
     
-    let bbox = digitText.getBoundingClientRect();
     if (digits.length > 5) {
         digitText.setAttribute('style', `font-size: ${30 * 5 / digits.length}px`);
     }
