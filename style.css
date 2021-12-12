@@ -105,11 +105,23 @@ button.toggle-off:active {
     color: #203050;
     background: #9fafbf;
 }
-.icon {
+button .icon {
     stroke: #ffffff;
     fill: #ffffff;
     width: 100%;
     height: 100%;
+}
+button:active .icon {
+    stroke: #dfdfdf;
+    fill: #dfdfdf;
+}
+button.toggle-off .icon {
+    stroke: #304060;
+    fill: #304060;
+}
+button.toggle-off:active .icon {
+    stroke: #203050;
+    fill: #203050;
 }
 .digit-button, .corner-button, .center-button, .color-button {
     width: calc(90 * var(--grid-unit));
