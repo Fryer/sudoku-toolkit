@@ -1,7 +1,12 @@
-export { check };
+export { startAutomaticCheck, check };
 
 
-function check(board) {
+function startAutomaticCheck(board) {
+    board.addEventListener('puzzleinput', () => check(board, true));
+}
+
+
+function check(board, automatic) {
     let checkRegions = true;
     for (let i = 0; i < board.puzzle.size; i++) {
         if (board.puzzle.regions[i].length != board.puzzle.size) {
@@ -26,20 +31,24 @@ function check(board) {
             warnings.add(i);
             continue;
         }
+        let digit = cell.given || cell.digit;
+        if (digit > board.puzzle.size) {
+            errors.add(i);
+            continue;
+        }
         let [column, row] = board.puzzle.cellPosition(i);
         let column0 = column - 1;
         let row0 = row - 1;
         let region = board.puzzle.cellRegions[i];
-        let digit = cell.given || cell.digit;
-        if (columnDigits[column0][digit]) {
+        if (columnDigits[column0][digit] !== undefined) {
             errors.add(columnDigits[column0][digit]);
             errors.add(i);
         }
-        if (rowDigits[row0][digit]) {
+        if (rowDigits[row0][digit] !== undefined) {
             errors.add(rowDigits[row0][digit]);
             errors.add(i);
         }
-        if (checkRegions && regionDigits[region][digit]) {
+        if (checkRegions && regionDigits[region][digit] !== undefined) {
             errors.add(regionDigits[region][digit]);
             errors.add(i);
         }
@@ -56,6 +65,9 @@ function check(board) {
         board.redrawDigits();
     }
     else if (warnings.size > 0) {
+        if (automatic) {
+            return;
+        }
         board.puzzle.errors = [];
         for (let i of warnings) {
             board.puzzle.errors.push(board.puzzle.cellPosition(i));

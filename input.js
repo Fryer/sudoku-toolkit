@@ -721,6 +721,7 @@ function updateDigits(board) {
     }
     
     board.redrawDigits();
+    board.dispatchEvent(new Event('puzzleinput'));
 }
 
 

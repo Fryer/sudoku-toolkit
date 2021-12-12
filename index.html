@@ -35,7 +35,7 @@ import { loadFromFPuzzles } from './puzzle.js';
 import { createBoard } from './renderer.js';
 import { startInput } from './input.js';
 import { startTimer } from './timer.js';
-import { check } from './check.js';
+import { startAutomaticCheck, check } from './check.js';
 import { initCapture } from './capture.js';
 
 window.addEventListener('load', () => {
@@ -53,6 +53,8 @@ window.addEventListener('load', () => {
     
     let timerPanel = document.getElementById('timer-panel')
     startTimer(board, timerPanel, document.getElementById('pause-overlay'));
+    
+    startAutomaticCheck(board);
     let checkButton = timerPanel.querySelector('.check-button');
     checkButton.addEventListener('click', () => check(board));
     
