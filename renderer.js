@@ -27,9 +27,6 @@ function createBoard(puzzle) {
     board.redrawDigits = redrawDigits;
     board.drawSelection = drawSelection;
     
-    // Add the board to the document temporarily to enable calculation of bounding boxes.
-    document.body.appendChild(board);
-    
     let stylePlaceholder = document.createElement('style');
     board.appendChild(stylePlaceholder);
     
@@ -215,8 +212,6 @@ function createBoard(puzzle) {
         drawGiven(board, ...given);
     }
     board.redrawDigits();
-    
-    document.body.removeChild(board);
     
     return board;
 }
@@ -1139,8 +1134,8 @@ function drawCenterMark(board, digits, column, row) {
     board.digits.appendChild(digitText);
     
     let bbox = digitText.getBoundingClientRect();
-    if (bbox.width > 90) {
-        digitText.setAttribute('style', `font-size: ${90 * 30 / bbox.width}px`);
+    if (digits.length > 5) {
+        digitText.setAttribute('style', `font-size: ${30 * 5 / digits.length}px`);
     }
 }
 
