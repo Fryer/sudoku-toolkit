@@ -106,6 +106,8 @@ function createBoard(puzzle) {
     board.appendChild(board.givens);
     board.digits = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     board.appendChild(board.digits);
+    board.checks = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    board.appendChild(board.checks);
     
     let gridSize = puzzle.size * 100;
     if (puzzle.diagonals[0]) {
@@ -135,56 +137,12 @@ function createBoard(puzzle) {
     cellLines.setAttribute('d', cellLinesPath);
     board.grid.appendChild(cellLines);
     
-    if (puzzle.regions.length == 0) {
+    for (let cells of puzzle.regions) {
+        let path = createOutline(board, cells, 0);
         let boxLines = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         boxLines.setAttribute('class', 'box-line');
-        switch (puzzle.size) {
-            case 4:
-                boxLines.setAttribute('d', 'M0 200 L400 200 M200 0 L200 400');
-                break;
-            case 6:
-                boxLines.setAttribute('d', 'M0 200 L600 200 M0 400 L600 400 M300 0 L300 600');
-                break;
-            case 8:
-                boxLines.setAttribute('d', 'M0 200 L800 200 M0 400 L800 400 M0 600 L800 600 M400 0 L400 800');
-                break;
-            case 9:
-                boxLines.setAttribute('d', 'M0 300 L900 300 M0 600 L900 600 M300 0 L300 900 M600 0 L600 900');
-                break;
-            case 10:
-                boxLines.setAttribute('d', 'M0 200 L1000 200 M0 400 L1000 400 M0 600 L1000 600 M0 800 L1000 800 M500 0 L500 1000');
-                break;
-            case 12:
-                boxLines.setAttribute('d', 'M0 300 L1200 300 M0 600 L1200 600 M0 900 L1200 900 M400 0 L400 1200 M800 0 L800 1200');
-                break;
-            case 14:
-                boxLines.setAttribute('d', 'M0 200 L1400 200 M0 400 L1400 400 M0 600 L1400 600 M0 800 L1400 800 M0 1000 L1400 1000 M0 1200 L1400 1200 M700 0 L700 1400');
-                break;
-            case 15:
-                boxLines.setAttribute('d', 'M0 300 L1500 300 M0 600 L1500 600 M0 900 L1500 900 M0 1200 L1500 1200 M500 0 L500 1500 M1000 0 L1000 1500');
-                break;
-            case 16:
-                boxLines.setAttribute('d', 'M0 400 L1600 400 M0 800 L1600 800 M0 1200 L1600 1200 M400 0 L400 1600 M800 0 L800 1600 M1200 0 L1200 1600');
-                break;
-            default: {
-                let path = [];
-                for (let y = 100; y < puzzle.size * 100; y += 100) {
-                    path.push(`M0 ${y} L${puzzle.size * 100} ${y}`);
-                }
-                boxLines.setAttribute('d', path.join(' '));
-                break;
-            }
-        }
+        boxLines.setAttribute('d', path);
         board.grid.appendChild(boxLines);
-    }
-    else {
-        for (let cells of puzzle.regions) {
-            let path = createOutline(board, cells, 0);
-            let boxLines = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            boxLines.setAttribute('class', 'box-line');
-            boxLines.setAttribute('d', path);
-            board.grid.appendChild(boxLines);
-        }
     }
     
     let borderLines = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -304,6 +262,18 @@ function redrawDigits() {
     }
     for (let color of this.puzzle.colors) {
         drawColor(this, ...color);
+    }
+    
+    this.checks.replaceChildren();
+    if (this.puzzle.errors) {
+        for (let error of this.puzzle.errors) {
+            drawError(this, ...error);
+        }
+        delete this.puzzle.errors;
+    }
+    if (this.puzzle.complete) {
+        drawComplete(this);
+        delete this.puzzle.complete;
     }
 }
 
@@ -1221,4 +1191,26 @@ function drawColor(board, colors, column, row) {
         colorFill.setAttribute('fill', color);
         board.colors.appendChild(colorFill);
     }
+}
+
+
+function drawError(board, column, row) {
+    let errorSquare = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    errorSquare.setAttribute('x', column * 100 - 100);
+    errorSquare.setAttribute('y', row * 100 - 100);
+    errorSquare.setAttribute('width', 100);
+    errorSquare.setAttribute('height', 100);
+    errorSquare.setAttribute('class', 'error-square');
+    board.checks.appendChild(errorSquare);
+}
+
+
+function drawComplete(board) {
+    let completeFlash = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    completeFlash.setAttribute('x', 0);
+    completeFlash.setAttribute('y', 0);
+    completeFlash.setAttribute('width', board.puzzle.size * 100);
+    completeFlash.setAttribute('height', board.puzzle.size * 100);
+    completeFlash.setAttribute('class', 'complete-flash');
+    board.checks.appendChild(completeFlash);
 }

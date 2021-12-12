@@ -19,11 +19,11 @@ function startInput(board, panel) {
     
     board.inputState = [];
     for (let i = 0; i < board.puzzle.size ** 2; i++) {
-        board.inputState.push({ given: false, digit: '', center: new Set(), corner: new Set(), color: new Set() });
+        board.inputState.push({ given: 0, digit: '', center: new Set(), corner: new Set(), color: new Set() });
     }
     for (let given of board.puzzle.givens) {
         let i = board.puzzle.cellIndex(given[1], given[2]);
-        board.inputState[i].given = true;
+        board.inputState[i].given = given[0];
     }
     for (let digit of board.puzzle.digits) {
         let i = board.puzzle.cellIndex(digit[1], digit[2]);
@@ -89,11 +89,11 @@ function startInput(board, panel) {
 function reset() {
     this.inputState = [];
     for (let i = 0; i < board.puzzle.size ** 2; i++) {
-        board.inputState.push({ given: false, digit: '', center: new Set(), corner: new Set(), color: new Set() });
+        board.inputState.push({ given: 0, digit: '', center: new Set(), corner: new Set(), color: new Set() });
     }
     for (let given of board.puzzle.givens) {
         let i = board.puzzle.cellIndex(given[1], given[2]);
-        board.inputState[i].given = true;
+        board.inputState[i].given = given[0];
     }
     updateDigits(this);
     deselectAll(this);

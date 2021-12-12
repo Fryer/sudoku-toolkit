@@ -42,6 +42,21 @@
     fill: none;
     stroke-width: 12.5;
 }
+.error-square {
+    fill: #ff000040;
+}
+.complete-flash {
+    fill: #00bf0060;
+    animation: complete-flash-fade 2s ease-out forwards;
+}
+@keyframes complete-flash-fade {
+    from {
+        opacity: 100%;
+    }
+    to {
+        opacity: 0%;
+    }
+}
 .extra-region {
     fill: #dfdfdf;
 }
