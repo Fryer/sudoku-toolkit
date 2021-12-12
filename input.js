@@ -44,9 +44,9 @@ function startInput(board, panel) {
     
     board.selectedCells = new Set();
     
+    board.lastUndo = copyInputState(board.inputState);
     board.undoHistory = [];
     board.undoIndex = -1;
-    pushUndo(board);
     
     panel.addEventListener('pointerdown', event => event.stopPropagation());
     for (let button of panel.querySelectorAll('.digit-button, .center-button, .corner-button, .color-button')) {
@@ -736,38 +736,109 @@ function copyInputState(state) {
 }
 
 
+function computeInputStateDelta(beforeState, afterState) {
+    let delta = {};
+    for (let [i, beforeCell] of beforeState.entries()) {
+        let afterCell = afterState[i];
+        let deltaCell = { digit: [], center: [], corner: [], color: []};
+        if (afterCell.digit != beforeCell.digit) {
+            deltaCell.digit = [beforeCell.digit, afterCell.digit];
+        }
+        for (let digit = 1; digit <= board.puzzle.size; digit++) {
+            let digitString = digit.toString();
+            if (afterCell.center.has(digitString) != beforeCell.center.has(digitString)) {
+                deltaCell.center.push(digitString);
+            }
+            if (afterCell.corner.has(digitString) != beforeCell.corner.has(digitString)) {
+                deltaCell.corner.push(digitString);
+            }
+            if (afterCell.color.has(digitString) != beforeCell.color.has(digitString)) {
+                deltaCell.color.push(digitString);
+            }
+        }
+        if (deltaCell.digit.length + deltaCell.center.length + deltaCell.corner.length + deltaCell.color.length > 0) {
+            delta[i] = deltaCell;
+        }
+    }
+    return delta;
+}
+
+
+function applyInputStateDelta(inputState, delta) {
+    for (let [i, deltaCell] of Object.entries(delta)) {
+        let cell = inputState[i];
+        if (deltaCell.digit.length == 2) {
+            cell.digit = (cell.digit == deltaCell.digit[0]) ? deltaCell.digit[1] : deltaCell.digit[0];
+        }
+        for (let digit of deltaCell.center) {
+            if (cell.center.has(digit)) {
+                cell.center.delete(digit);
+            }
+            else {
+                cell.center.add(digit);
+            }
+        }
+        for (let digit of deltaCell.corner) {
+            if (cell.corner.has(digit)) {
+                cell.corner.delete(digit);
+            }
+            else {
+                cell.corner.add(digit);
+            }
+        }
+        for (let digit of deltaCell.color) {
+            if (cell.color.has(digit)) {
+                cell.color.delete(digit);
+            }
+            else {
+                cell.color.add(digit);
+            }
+        }
+    }
+}
+
+
 function pushUndo(board) {
+    let delta = computeInputStateDelta(board.lastUndo, board.inputState);
+    if (Object.entries(delta).length == 0) {
+        return;
+    }
+    
     board.undoIndex++;
     board.undoHistory[board.undoIndex] = {
-        inputState: copyInputState(board.inputState),
+        deltaState: delta,
         selectedCells: new Set(board.selectedCells),
         cursor: (board.cursor ? [board.cursor.column, board.cursor.row] : undefined)
     };
     board.undoHistory.splice(board.undoIndex + 1);
+    board.lastUndo = copyInputState(board.inputState);
 }
 
 
 function undo(board) {
-    if (board.undoIndex < 1) {
+    if (board.undoIndex < 0) {
         return;
     }
-    board.undoIndex--;
     
-    board.inputState = copyInputState(board.undoHistory[board.undoIndex].inputState);
+    applyInputStateDelta(board.inputState, board.undoHistory[board.undoIndex].deltaState);
+    board.lastUndo = copyInputState(board.inputState);
     updateDigits(board);
+    
     if (board.cursor) {
         board.removeChild(board.cursor.selection);
         delete board.cursor;
     }
     
-    board.selectedCells = new Set(board.undoHistory[board.undoIndex + 1].selectedCells);
-    let cursor = board.undoHistory[board.undoIndex + 1].cursor;
+    board.selectedCells = new Set(board.undoHistory[board.undoIndex].selectedCells);
+    let cursor = board.undoHistory[board.undoIndex].cursor;
     if (cursor === undefined) {
         deselectAll(board);
     }
     else {
         updateSelection(board, cursor[0], cursor[1]);
     }
+    
+    board.undoIndex--;
 }
 
 
@@ -777,8 +848,10 @@ function redo(board) {
     }
     board.undoIndex++;
     
-    board.inputState = copyInputState(board.undoHistory[board.undoIndex].inputState);
+    applyInputStateDelta(board.inputState, board.undoHistory[board.undoIndex].deltaState);
+    board.lastUndo = copyInputState(board.inputState);
     updateDigits(board);
+    
     if (board.cursor) {
         board.removeChild(board.cursor.selection);
         delete board.cursor;
