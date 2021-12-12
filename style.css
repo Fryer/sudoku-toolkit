@@ -215,6 +215,16 @@ button.toggle-off:active {
 }
 .color-mode-button div {
     vertical-align: bottom;
+    background: #ffffff;
+}
+.color-mode-button:active div {
+    background: #dfdfdf;
+}
+.color-mode-button.toggle-off div {
+    background: #304060;
+}
+.color-mode-button.toggle-off:active div {
+    background: #203050;
 }
 .pause-button, .play-button {
     border-top-right-radius: 0;
