@@ -9,6 +9,7 @@ const COLOR_MODE = 3;
 
 function startInput(board, panel) {
     board.resetInput = reset;
+    board.updateDigits = updateDigits;
     
     board.addEventListener('pointerdown', (event) => mouseDown(event, board, true));
     window.addEventListener('pointerdown', (event) => mouseDown(event, board, false));
@@ -95,9 +96,9 @@ function reset() {
         let i = board.puzzle.cellIndex(given[1], given[2]);
         board.inputState[i].given = given[0];
     }
-    updateDigits(this);
+    this.updateDigits();
     deselectAll(this);
-    pushUndo(board);
+    pushUndo(board, true);
 }
 
 
@@ -341,7 +342,7 @@ function keyDown(event, board) {
                     board.inputState[i].color.add(digit);
                 }
             }
-            updateDigits(board);
+            board.updateDigits();
             pushUndo(board);
             return;
         }
@@ -397,7 +398,7 @@ function keyDown(event, board) {
                 board.inputState[i].digit = digit;
             }
         }
-        updateDigits(board);
+        board.updateDigits();
         pushUndo(board);
         return;
     }
@@ -468,7 +469,7 @@ function keyDown(event, board) {
                 board.inputState[i].color = new Set();
             }
         }
-        updateDigits(board);
+        board.updateDigits();
         pushUndo(board);
         return;
     }
@@ -658,42 +659,42 @@ function updateSelection(board, column, row) {
 }
 
 
-function updateDigits(board) {
-    board.puzzle.digits = [];
-    for (let column = 1; column <= board.puzzle.size; column++) {
-        for (let row = 1; row <= board.puzzle.size; row++) {
-            let i = board.puzzle.cellIndex(column, row);
-            if (board.inputState[i].given) {
+function updateDigits() {
+    this.puzzle.digits = [];
+    for (let column = 1; column <= this.puzzle.size; column++) {
+        for (let row = 1; row <= this.puzzle.size; row++) {
+            let i = this.puzzle.cellIndex(column, row);
+            if (this.inputState[i].given) {
                 continue;
             }
-            if (board.inputState[i].digit) {
-                board.puzzle.digits.push([board.inputState[i].digit, column, row]);
+            if (this.inputState[i].digit) {
+                this.puzzle.digits.push([this.inputState[i].digit, column, row]);
             }
         }
     }
     
-    board.puzzle.centerMarks = [];
-    for (let column = 1; column <= board.puzzle.size; column++) {
-        for (let row = 1; row <= board.puzzle.size; row++) {
-            let i = board.puzzle.cellIndex(column, row);
-            if (board.inputState[i].given || board.inputState[i].digit) {
+    this.puzzle.centerMarks = [];
+    for (let column = 1; column <= this.puzzle.size; column++) {
+        for (let row = 1; row <= this.puzzle.size; row++) {
+            let i = this.puzzle.cellIndex(column, row);
+            if (this.inputState[i].given || this.inputState[i].digit) {
                 continue;
             }
-            if (board.inputState[i].center.size > 0) {
-                board.puzzle.centerMarks.push([[...board.inputState[i].center.values()].sort(), column, row]);
+            if (this.inputState[i].center.size > 0) {
+                this.puzzle.centerMarks.push([[...this.inputState[i].center.values()].sort(), column, row]);
             }
         }
     }
     
-    board.puzzle.cornerMarks = [];
-    for (let column = 1; column <= board.puzzle.size; column++) {
-        for (let row = 1; row <= board.puzzle.size; row++) {
-            let i = board.puzzle.cellIndex(column, row);
-            if (board.inputState[i].given || board.inputState[i].digit) {
+    this.puzzle.cornerMarks = [];
+    for (let column = 1; column <= this.puzzle.size; column++) {
+        for (let row = 1; row <= this.puzzle.size; row++) {
+            let i = this.puzzle.cellIndex(column, row);
+            if (this.inputState[i].given || this.inputState[i].digit) {
                 continue;
             }
-            if (board.inputState[i].corner.size > 0) {
-                board.puzzle.cornerMarks.push([[...board.inputState[i].corner.values()].sort(), column, row]);
+            if (this.inputState[i].corner.size > 0) {
+                this.puzzle.cornerMarks.push([[...this.inputState[i].corner.values()].sort(), column, row]);
             }
         }
     }
@@ -709,19 +710,18 @@ function updateDigits(board) {
         '#7f7f7f7f',
         '#2020207f'
     ];
-    board.puzzle.colors = [];
-    for (let column = 1; column <= board.puzzle.size; column++) {
-        for (let row = 1; row <= board.puzzle.size; row++) {
-            let i = board.puzzle.cellIndex(column, row);
-            if (board.inputState[i].color.size > 0) {
-                let colorDigits = [...board.inputState[i].color.values()].sort();
-                board.puzzle.colors.push([colorDigits.map(digit => COLORS[digit - 1]), column, row]);
+    this.puzzle.colors = [];
+    for (let column = 1; column <= this.puzzle.size; column++) {
+        for (let row = 1; row <= this.puzzle.size; row++) {
+            let i = this.puzzle.cellIndex(column, row);
+            if (this.inputState[i].color.size > 0) {
+                let colorDigits = [...this.inputState[i].color.values()].sort();
+                this.puzzle.colors.push([colorDigits.map(digit => COLORS[digit - 1]), column, row]);
             }
         }
     }
     
-    board.redrawDigits();
-    board.dispatchEvent(new Event('puzzleinput'));
+    this.redrawDigits();
 }
 
 
@@ -798,9 +798,9 @@ function applyInputStateDelta(inputState, delta) {
 }
 
 
-function pushUndo(board) {
+function pushUndo(board, force) {
     let delta = computeInputStateDelta(board.lastUndo, board.inputState);
-    if (Object.entries(delta).length == 0) {
+    if (!force && Object.entries(delta).length == 0) {
         return;
     }
     
@@ -812,6 +812,8 @@ function pushUndo(board) {
     };
     board.undoHistory.splice(board.undoIndex + 1);
     board.lastUndo = copyInputState(board.inputState);
+    
+    board.dispatchEvent(new Event('puzzleinput'));
 }
 
 
@@ -822,7 +824,7 @@ function undo(board) {
     
     applyInputStateDelta(board.inputState, board.undoHistory[board.undoIndex].deltaState);
     board.lastUndo = copyInputState(board.inputState);
-    updateDigits(board);
+    board.updateDigits();
     
     if (board.cursor) {
         board.removeChild(board.cursor.selection);
@@ -839,6 +841,8 @@ function undo(board) {
     }
     
     board.undoIndex--;
+    
+    board.dispatchEvent(new Event('puzzleinput'));
 }
 
 
@@ -850,7 +854,7 @@ function redo(board) {
     
     applyInputStateDelta(board.inputState, board.undoHistory[board.undoIndex].deltaState);
     board.lastUndo = copyInputState(board.inputState);
-    updateDigits(board);
+    board.updateDigits();
     
     if (board.cursor) {
         board.removeChild(board.cursor.selection);
@@ -865,4 +869,6 @@ function redo(board) {
     else {
         updateSelection(board, cursor[0], cursor[1]);
     }
+    
+    board.dispatchEvent(new Event('puzzleinput'));
 }

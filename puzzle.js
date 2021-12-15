@@ -7,10 +7,12 @@ function loadFromFPuzzles(fpuzzles) {
     console.log(data);
     
     let puzzle = {
+        id: 'fpuzzles-' + hash(fpuzzles),
         size: data.size,
         title: '',
         author: '',
         rules: [],
+        cellRegions: [],
         regions: [],
         extraRegions: [],
         clones: [],
@@ -424,6 +426,15 @@ function loadFromFPuzzles(fpuzzles) {
 }
 
 
+function hash(text) {
+    let hash = 0;
+    for (let i = 0; i < text.length; i++) {
+        hash = (hash * 31 + text.charCodeAt(i)) | 0;
+    }
+    return hash;
+}
+
+
 function cellIndex(column, row) {
     return (row - 1) * this.size + column - 1;
 }
@@ -440,10 +451,14 @@ function cellPosition(index) {
 
 let puzzle = {};
 
+puzzle.id = '';
 puzzle.size = 9;
 puzzle.title = '';
 puzzle.author = '';
 puzzle.rules = [];
+
+// Format: [region, ...]
+puzzle.cellRegions = [];
 
 // Format: [[column, row], ...]
 puzzle.regions = [];

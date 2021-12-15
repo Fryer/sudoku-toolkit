@@ -17,7 +17,13 @@ function startTimer(board, panel, pauseOverlay) {
     board.timeField.value = '0:00';
     unpause(board);
     
+    board.updateTimer = updateTimer;
     board.stopTimer = stopTimer;
+}
+
+
+function updateTimer() {
+    update(this, true);
 }
 
 
@@ -88,14 +94,14 @@ function updateLoop(board) {
 }
 
 
-function update(board) {
+function update(board, force) {
     let lastSeconds = Math.floor(board.time / 1000);
     let dt = performance.now() - board.lastTimeUpdate;
     board.time += dt;
     board.lastTimeUpdate += dt;
     
     let seconds = Math.floor(board.time / 1000);
-    if (seconds == lastSeconds) {
+    if (!force && seconds == lastSeconds) {
         return;
     }
     

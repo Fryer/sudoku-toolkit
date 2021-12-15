@@ -37,6 +37,7 @@ import { startInput } from './input.js';
 import { startTimer } from './timer.js';
 import { startAutomaticCheck, check } from './check.js';
 import { initCapture } from './capture.js';
+import { initProgress } from './progress.js';
 
 window.addEventListener('load', () => {
     let fpuzzles = (new URL(window.location)).searchParams.get('fpuzzles');
@@ -76,6 +77,8 @@ window.addEventListener('load', () => {
             rules.appendChild(ruleParagraph);
         }
     }
+    
+    initProgress(board);
 });
 </script>
 </head>
