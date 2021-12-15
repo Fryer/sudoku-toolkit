@@ -208,6 +208,9 @@ function encodeProgress(board) {
 
 function decodeProgress(board, progress) {
     board.undoIndex = progress.undoIndex;
+    if (progress.stopped) {
+        board.stopTimer();
+    }
     board.time = progress.time;
     board.updateTimer();
     
@@ -274,8 +277,4 @@ function decodeProgress(board, progress) {
     });
     
     board.updateDigits();
-    
-    if (progress.stopped) {
-        board.stopTimer();
-    }
 }

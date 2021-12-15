@@ -96,9 +96,11 @@ function updateLoop(board) {
 
 function update(board, force) {
     let lastSeconds = Math.floor(board.time / 1000);
-    let dt = performance.now() - board.lastTimeUpdate;
-    board.time += dt;
-    board.lastTimeUpdate += dt;
+    if (!board.stopped) {
+        let dt = performance.now() - board.lastTimeUpdate;
+        board.time += dt;
+        board.lastTimeUpdate += dt;
+    }
     
     let seconds = Math.floor(board.time / 1000);
     if (!force && seconds == lastSeconds) {
