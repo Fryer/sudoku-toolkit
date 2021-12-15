@@ -169,7 +169,7 @@ function upgradeDB(db) {
 
 function encodeProgress(board) {
     let progress = {
-        version: 1,
+        version: 2,
         inputState: [],
         undoHistory: [],
         undoIndex: board.undoIndex,
@@ -177,14 +177,14 @@ function encodeProgress(board) {
         stopped: board.stopped
     };
     
-    progress.inputState = board.lastUndo.map(cell => {
+    let inputState = board.lastUndo.map(cell => {
         if (cell.center.size == 0 && cell.corner.size == 0 && cell.color.size == 0) {
             return cell.digit;
         }
         return [cell.digit, [...cell.center].join(''), [...cell.corner].join(''), [...cell.color].join('')];
     });
     
-    progress.undoHistory = board.undoHistory.map(step => {
+    let undoHistory = board.undoHistory.map(step => {
         let deltaState = Object.entries(step.deltaState).map(entry => {
             let [i, cell] = entry;
             return [i, cell.digit.join(','), cell.center.join(''), cell.corner.join(''), cell.color.join('')];
@@ -199,6 +199,9 @@ function encodeProgress(board) {
         return [deltaState, selectedCells, step.cursor];
     });
     
+    progress.inputState = LZString.compressToUTF16(JSON.stringify(inputState));
+    progress.undoHistory = LZString.compressToUTF16(JSON.stringify(undoHistory));
+    
     return progress;
 }
 
@@ -208,7 +211,14 @@ function decodeProgress(board, progress) {
     board.time = progress.time;
     board.updateTimer();
     
-    board.inputState = progress.inputState.map((cell, i) => {
+    let inputState = progress.inputState;
+    let undoHistory = progress.undoHistory;
+    if (progress.version >= 2) {
+        inputState = JSON.parse(LZString.decompressFromUTF16(inputState));
+        undoHistory = JSON.parse(LZString.decompressFromUTF16(undoHistory));
+    }
+    
+    board.inputState = inputState.map((cell, i) => {
         let given = board.inputState[i].given;
         if (cell instanceof Array) {
             return {
@@ -229,7 +239,7 @@ function decodeProgress(board, progress) {
         color: new Set(cell.color)
     }));
     
-    board.undoHistory = progress.undoHistory.map(step => {
+    board.undoHistory = undoHistory.map(step => {
         let deltaState;
         if (step[0].length == 0 || step[0][0] instanceof Array) {
             deltaState = Object.fromEntries(step[0].map(entry => {
