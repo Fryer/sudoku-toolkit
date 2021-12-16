@@ -365,12 +365,16 @@ function keyDown(event, board) {
             }
             if (hasMark) {
                 for (let i of selectedCells) {
-                    board.inputState[i].center.delete(digit);
+                    if (!board.inputState[i].given && !board.inputState[i].digit) {
+                        board.inputState[i].center.delete(digit);
+                    }
                 }
             }
             else {
                 for (let i of selectedCells) {
-                    board.inputState[i].center.add(digit);
+                    if (!board.inputState[i].given && !board.inputState[i].digit) {
+                        board.inputState[i].center.add(digit);
+                    }
                 }
             }
         }
@@ -384,18 +388,24 @@ function keyDown(event, board) {
             }
             if (hasMark) {
                 for (let i of selectedCells) {
-                    board.inputState[i].corner.delete(digit);
+                    if (!board.inputState[i].given && !board.inputState[i].digit) {
+                        board.inputState[i].corner.delete(digit);
+                    }
                 }
             }
             else {
                 for (let i of selectedCells) {
-                    board.inputState[i].corner.add(digit);
+                    if (!board.inputState[i].given && !board.inputState[i].digit) {
+                        board.inputState[i].corner.add(digit);
+                    }
                 }
             }
         }
         else {
             for (let i of selectedCells) {
-                board.inputState[i].digit = digit;
+                if (!board.inputState[i].given) {
+                    board.inputState[i].digit = digit;
+                }
             }
         }
         board.updateDigits();
@@ -417,43 +427,46 @@ function keyDown(event, board) {
         if (board.selectedCells.size == 0) {
             return;
         }
+        let hasDigit = false;
+        let hasCenter = false;
+        let hasCorner = false;
+        let hasColor = false;
+        for (let i of board.selectedCells) {
+            if (board.inputState[i].color.size > 0) {
+                hasColor = true;
+            }
+            if (board.inputState[i].digit != '') {
+                hasDigit = true;
+                continue;
+            }
+            if (board.inputState[i].center.size > 0) {
+                hasCenter = true;
+            }
+            if (board.inputState[i].corner.size > 0) {
+                hasCorner = true;
+            }
+        }
         let deleteDigit = true;
-        let deleteCenter = true;
-        let deleteCorner = true;
-        let deleteColor = true;
-        if (board.modifiedInputMode == COLOR_MODE) {
+        let deleteCenter = !hasDigit;
+        let deleteCorner = !hasDigit && !hasCenter;
+        let deleteColor = !hasDigit && !hasCenter && !hasCorner;
+        if (board.modifiedInputMode == COLOR_MODE && hasColor) {
             deleteDigit = false;
             deleteCenter = false;
             deleteCorner = false;
             deleteColor = true;
         }
-        else if (board.modifiedInputMode == CENTER_MODE) {
+        if (board.modifiedInputMode == CENTER_MODE && hasCenter) {
             deleteDigit = false;
             deleteCenter = true;
             deleteCorner = false;
             deleteColor = false;
         }
-        else if (board.modifiedInputMode == CORNER_MODE) {
+        if (board.modifiedInputMode == CORNER_MODE && hasCorner) {
             deleteDigit = false;
             deleteCenter = false;
             deleteCorner = true;
             deleteColor = false;
-        }
-        else {
-            for (let i of board.selectedCells) {
-                if (board.inputState[i].digit != '') {
-                    deleteCenter = false;
-                    deleteCorner = false;
-                    deleteColor = false;
-                }
-                else if (board.inputState[i].center.size > 0) {
-                    deleteCorner = false;
-                    deleteColor = false;
-                }
-                else if (board.inputState[i].corner.size > 0) {
-                    deleteColor = false;
-                }
-            }
         }
         for (let i of board.selectedCells) {
             if (deleteDigit) {
@@ -664,9 +677,6 @@ function updateDigits() {
     for (let column = 1; column <= this.puzzle.size; column++) {
         for (let row = 1; row <= this.puzzle.size; row++) {
             let i = this.puzzle.cellIndex(column, row);
-            if (this.inputState[i].given) {
-                continue;
-            }
             if (this.inputState[i].digit) {
                 this.puzzle.digits.push([this.inputState[i].digit, column, row]);
             }
@@ -677,9 +687,6 @@ function updateDigits() {
     for (let column = 1; column <= this.puzzle.size; column++) {
         for (let row = 1; row <= this.puzzle.size; row++) {
             let i = this.puzzle.cellIndex(column, row);
-            if (this.inputState[i].given || this.inputState[i].digit) {
-                continue;
-            }
             if (this.inputState[i].center.size > 0) {
                 this.puzzle.centerMarks.push([[...this.inputState[i].center.values()].sort(), column, row]);
             }
@@ -690,9 +697,6 @@ function updateDigits() {
     for (let column = 1; column <= this.puzzle.size; column++) {
         for (let row = 1; row <= this.puzzle.size; row++) {
             let i = this.puzzle.cellIndex(column, row);
-            if (this.inputState[i].given || this.inputState[i].digit) {
-                continue;
-            }
             if (this.inputState[i].corner.size > 0) {
                 this.puzzle.cornerMarks.push([[...this.inputState[i].corner.values()].sort(), column, row]);
             }
@@ -833,7 +837,7 @@ function undo(board) {
     
     board.selectedCells = new Set(board.undoHistory[board.undoIndex].selectedCells);
     let cursor = board.undoHistory[board.undoIndex].cursor;
-    if (cursor === undefined) {
+    if (!cursor) {
         deselectAll(board);
     }
     else {
@@ -863,7 +867,7 @@ function redo(board) {
     
     board.selectedCells = new Set(board.undoHistory[board.undoIndex].selectedCells);
     let cursor = board.undoHistory[board.undoIndex].cursor;
-    if (cursor === undefined) {
+    if (!cursor) {
         deselectAll(board);
     }
     else {
