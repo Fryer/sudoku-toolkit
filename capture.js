@@ -42,6 +42,8 @@ async function createBoardImage(board, captureImage) {
         });
     }
     
+    board.querySelector('.complete-flash').remove();
+    
     // Add SVG headers. This is required by the <img> tag.
     let svg = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' +
         '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n' +
