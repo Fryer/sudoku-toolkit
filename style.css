@@ -93,6 +93,14 @@ button {
     cursor: pointer;
     touch-action: manipulation;
 }
+button::selection, button *::selection {
+    /* This is a hack to fix a bug in Firefox that makes it possible to select buttons' text when
+     * they're hidden with "display: none". The text only appears to be visually selected, so
+     * copying behaves as if it's unselected, and the visual glitch can be fixed with styling.
+     */
+    background-color: unset;
+    color: unset;
+}
 button:active {
     color: #dfdfdf;
     background: #5070af;
