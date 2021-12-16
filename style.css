@@ -1,7 +1,7 @@
 :root {
     --dvw: 1vw;
     --dvh: 1vh;
-    --grid-unit: min(var(--dvh) * 95 / 900, var(--dvw) * 95 * 9 / 13 / 900);
+    --grid-unit: min(var(--dvh) / 9.5, var(--dvw) / 9.5 * 950 / 1350);
 }
 body {
     width: 100%;
@@ -13,17 +13,18 @@ body {
     display: flex;
     justify-content: center;
     width: 100%;
-    height: min(var(--dvh) * 100, var(--dvw) * 100 * 9 / 13);
+    height: calc(var(--grid-unit) * 950);
 }
 .content, .sidebar {
     display: flex;
     flex-direction: column;
-    margin: 0 calc(10 * var(--grid-unit));
+}
+.content {
+    margin-right: calc(20 * var(--grid-unit));
 }
 .sidebar {
     justify-content: center;
-    margin-top: calc(45 * var(--grid-unit));
-    margin-bottom: calc(15 * var(--grid-unit));
+    margin: calc(45 * var(--grid-unit)) calc(5 * var(--grid-unit)) calc(15 * var(--grid-unit)) 0;
 }
 .header {
     display: flex;
