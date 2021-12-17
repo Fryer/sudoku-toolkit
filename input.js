@@ -11,12 +11,12 @@ function startInput(board, panel) {
     board.resetInput = reset;
     board.updateDigits = updateDigits;
     
-    board.addEventListener('pointerdown', (event) => mouseDown(event, board, true));
-    window.addEventListener('pointerdown', (event) => mouseDown(event, board, false));
-    window.addEventListener('pointerup', (event) => mouseUp(event, board));
-    window.addEventListener('pointermove', (event) => mouseMove(event, board));
-    window.addEventListener('keydown', (event) => keyDown(event, board));
-    window.addEventListener('keyup', (event) => keyUp(event, board));
+    board.addEventListener('pointerdown', event => mouseDown(event, board, true));
+    window.addEventListener('pointerdown', event => mouseDown(event, board, false));
+    window.addEventListener('pointerup', event => mouseUp(event, board));
+    window.addEventListener('pointermove', event => mouseMove(event, board));
+    window.addEventListener('keydown', event => keyDown(event, board));
+    window.addEventListener('keyup', event => keyUp(event, board));
     
     board.inputState = [];
     for (let i = 0; i < board.puzzle.size ** 2; i++) {
@@ -169,6 +169,24 @@ function mouseDown(event, board, inside) {
         return;
     }
     
+    let x = event.clientX;
+    let y = event.clientY;
+    if (event.button == 1 && inside) {
+        if (!board.isInCell(x, y, 2)) {
+            return;
+        }
+        if (!event.ctrlKey && !event.shiftKey && !event.altKey) {
+            deselectAll(board);
+        }
+        let [column, row] = board.cellPosition(x, y);
+        if (event.altKey) {
+            selectEquivalentCells(board, column, row, true);
+            return;
+        }
+        selectEquivalentCells(board, column, row);
+        return;
+    }
+    
     if (event.button != 0) {
         if (board.selectionStart) {
             delete board.selectionStart;
@@ -179,8 +197,6 @@ function mouseDown(event, board, inside) {
         event.stopPropagation();
     }
     
-    let x = event.clientX;
-    let y = event.clientY;
     if (!inside) {
         deselectAll(board);
         return;
@@ -620,13 +636,70 @@ function keyUp(event, board) {
 }
 
 
-function toggleMark(set, digit) {
-    if (set.has(digit)) {
-        set.delete(digit);
+function selectEquivalentCells(board, column, row, deselect) {
+    if (board.cursor) {
+        board.removeChild(board.cursor.selection);
+        delete board.cursor;
+    }
+    
+    function isEquivalent(other, selected) {
+        if (selected.size == 1 && other.has(selected.values().next().value)) {
+            return true;
+        }
+        if (other.size != selected.size) {
+            return false;
+        }
+        for (let value of selected) {
+            if (!other.has(value)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    let cell = board.inputState[board.puzzle.cellIndex(column, row)];
+    let equivalenceMode = board.modifiedInputMode;
+    if (cell.given || cell.digit) {
+        equivalenceMode = DIGIT_MODE;
     }
     else {
-        set.add(digit);
+        if (cell.color.size > 0 && board.modifiedInputMode == COLOR_MODE) {
+            equivalenceMode = COLOR_MODE;
+        }
+        else if (cell.center.size > 0 && board.modifiedInputMode == CENTER_MODE) {
+            equivalenceMode = CENTER_MODE;
+        }
+        else if (cell.corner.size > 0 && board.modifiedInputMode == CORNER_MODE) {
+            equivalenceMode = CORNER_MODE;
+        }
+        else if (cell.color.size > 0) {
+            equivalenceMode = COLOR_MODE;
+        }
+        else if (cell.center.size > 0) {
+            equivalenceMode = CENTER_MODE;
+        }
+        else if (cell.corner.size > 0) {
+            equivalenceMode = CORNER_MODE;
+        }
     }
+    for (let [i, otherCell] of board.inputState.entries()) {
+        let equivalent = false;
+        equivalent ||= equivalenceMode == DIGIT_MODE && (otherCell.given || otherCell.digit) == (cell.given || cell.digit);
+        equivalent ||= equivalenceMode == CENTER_MODE && isEquivalent(otherCell.center, cell.center);
+        equivalent ||= equivalenceMode == CORNER_MODE && isEquivalent(otherCell.corner, cell.corner);
+        equivalent ||= equivalenceMode == COLOR_MODE && isEquivalent(otherCell.color, cell.color);
+        if (!equivalent) {
+            continue;
+        }
+        if (deselect) {
+            board.selectedCells.delete(i);
+        }
+        else {
+            board.selectedCells.add(i);
+        }
+    }
+    
+    updateSelection(board, column, row);
 }
 
 
@@ -677,9 +750,6 @@ function updateDigits() {
     for (let column = 1; column <= this.puzzle.size; column++) {
         for (let row = 1; row <= this.puzzle.size; row++) {
             let i = this.puzzle.cellIndex(column, row);
-            if (this.inputState[i].given) {
-                continue;
-            }
             if (this.inputState[i].digit) {
                 this.puzzle.digits.push([this.inputState[i].digit, column, row]);
             }
@@ -690,7 +760,7 @@ function updateDigits() {
     for (let column = 1; column <= this.puzzle.size; column++) {
         for (let row = 1; row <= this.puzzle.size; row++) {
             let i = this.puzzle.cellIndex(column, row);
-            if (this.inputState[i].given || this.inputState[i].digit) {
+            if (this.inputState[i].digit) {
                 continue;
             }
             if (this.inputState[i].center.size > 0) {
@@ -703,7 +773,7 @@ function updateDigits() {
     for (let column = 1; column <= this.puzzle.size; column++) {
         for (let row = 1; row <= this.puzzle.size; row++) {
             let i = this.puzzle.cellIndex(column, row);
-            if (this.inputState[i].given || this.inputState[i].digit) {
+            if (this.inputState[i].digit) {
                 continue;
             }
             if (this.inputState[i].corner.size > 0) {
