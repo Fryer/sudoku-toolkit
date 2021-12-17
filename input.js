@@ -677,6 +677,9 @@ function updateDigits() {
     for (let column = 1; column <= this.puzzle.size; column++) {
         for (let row = 1; row <= this.puzzle.size; row++) {
             let i = this.puzzle.cellIndex(column, row);
+            if (this.inputState[i].given) {
+                continue;
+            }
             if (this.inputState[i].digit) {
                 this.puzzle.digits.push([this.inputState[i].digit, column, row]);
             }
@@ -687,6 +690,9 @@ function updateDigits() {
     for (let column = 1; column <= this.puzzle.size; column++) {
         for (let row = 1; row <= this.puzzle.size; row++) {
             let i = this.puzzle.cellIndex(column, row);
+            if (this.inputState[i].given || this.inputState[i].digit) {
+                continue;
+            }
             if (this.inputState[i].center.size > 0) {
                 this.puzzle.centerMarks.push([[...this.inputState[i].center.values()].sort(), column, row]);
             }
@@ -697,6 +703,9 @@ function updateDigits() {
     for (let column = 1; column <= this.puzzle.size; column++) {
         for (let row = 1; row <= this.puzzle.size; row++) {
             let i = this.puzzle.cellIndex(column, row);
+            if (this.inputState[i].given || this.inputState[i].digit) {
+                continue;
+            }
             if (this.inputState[i].corner.size > 0) {
                 this.puzzle.cornerMarks.push([[...this.inputState[i].corner.values()].sort(), column, row]);
             }
