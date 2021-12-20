@@ -658,8 +658,9 @@ function selectEquivalentCells(board, column, row, deselect) {
     }
     
     let cell = board.inputState[board.puzzle.cellIndex(column, row)];
+    let digit = cell.given || cell.digit
     let equivalenceMode = board.modifiedInputMode;
-    if (cell.given || cell.digit) {
+    if (digit) {
         equivalenceMode = DIGIT_MODE;
     }
     else {
@@ -683,11 +684,13 @@ function selectEquivalentCells(board, column, row, deselect) {
         }
     }
     for (let [i, otherCell] of board.inputState.entries()) {
-        let equivalent = false;
-        equivalent ||= equivalenceMode == DIGIT_MODE && (otherCell.given || otherCell.digit) == (cell.given || cell.digit);
-        equivalent ||= equivalenceMode == CENTER_MODE && isEquivalent(otherCell.center, cell.center);
-        equivalent ||= equivalenceMode == CORNER_MODE && isEquivalent(otherCell.corner, cell.corner);
+        let otherDigit = otherCell.given || otherCell.digit;
+        let equivalent = equivalenceMode == DIGIT_MODE && otherDigit == digit;
         equivalent ||= equivalenceMode == COLOR_MODE && isEquivalent(otherCell.color, cell.color);
+        if (!otherDigit) {
+            equivalent ||= equivalenceMode == CENTER_MODE && isEquivalent(otherCell.center, cell.center);
+            equivalent ||= equivalenceMode == CORNER_MODE && isEquivalent(otherCell.corner, cell.corner);
+        }
         if (!equivalent) {
             continue;
         }
